@@ -1,8 +1,10 @@
 import { createContext, useEffect, useState } from 'react';
 import axios from '../lib/axios';
 import { useNavigate } from 'react-router-dom';
+
 export const AuthContext = createContext({});
 const SESSION_NAME = 'session-verified';
+
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [errors, setErrors] = useState({});
@@ -12,14 +14,18 @@ export function AuthProvider({ children }) {
     const sessionData = window.localStorage.getItem(SESSION_NAME);
     const initialSessionVerified = sessionData ? JSON.parse(sessionData) : false;
     const [sessionVerified, setSessionVerified] = useState(initialSessionVerified);
+
     const csrf = () => axios.get('/sanctum/csrf-cookie');
+
     const getUser = async () => {
         try {
             const { data } = await axios.get('/api/user');
             setUser(data);
             setSessionVerified(true);
             window.localStorage.setItem(SESSION_NAME, 'true');
-        }
+            // Guardar el ID del usuario en sessionStorage
+            sessionStorage.setItem('userId', data.id);
+        } 
         catch (e) {
             console.warn('Error ', e);
         }
@@ -163,7 +169,8 @@ export function AuthProvider({ children }) {
             fetchUser();
         }
     }, [user]);
-    return (<AuthContext.Provider value={{
+    return (
+        <AuthContext.Provider value={{
             csrf,
             errors,
             user,
