@@ -1,4 +1,5 @@
 import React from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { Toaster } from "react-hot-toast";
 import { Route, Routes } from "react-router-dom";
 import AuthLayout from "./components/layout/AuthLayout";
@@ -27,7 +28,7 @@ export default function App() {
         >
           <Route path="/" element={<Home />} />
           <Route path="/quickstart" element={<QuickStart />} />
-          <Route path="/directo" element={<DirectoPage />} />
+          <Route path="/directos" element={<DirectoPage />} />
           <Route path="/salas" element={<SalasPage />} />
           <Route path="/apuestas" element={<ApuestasPage />} />
         </Route>

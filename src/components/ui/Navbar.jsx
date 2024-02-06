@@ -6,9 +6,9 @@ import useAuthContext from "../../hooks/useAuthContext";
 
 const navigation = [
   { name: "Home", path: "/", current: true },
-  { name: "DirectosPage", path: "/directos", current: false },
-  { name: "SalasPage", path: "/salas", current: false },
-  { name: "ApuestasPage", path: "/apuestas", current: false },
+  { name: "Directos", path: "/directos", current: false },
+  { name: "Salas", path: "/salas", current: false },
+  { name: "Apuestas", path: "/apuestas", current: false },
 ];
 
 function classNames(...classes) {
