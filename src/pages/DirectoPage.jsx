@@ -16,7 +16,7 @@ const PartidosActivos = () => {
 
   useEffect(() => {
     // Llamada a la API de Laravel para obtener los partidos activos
-    fetch("http://lapachanga-back.v2.test/api/partidos")
+    fetch("http://lapachanga-back.v2.test/api/partidos/today")
       .then((response) => response.json())
       .then((data) => {
         setPartidos(data);
@@ -43,6 +43,7 @@ const PartidosActivos = () => {
             nombreEquipo2: response2.data.nombre,
             equipo1Cuota: cuotaresponse.data.equipo1_cuota,
             equipo2Cuota: cuotaresponse.data.equipo2_cuota,
+            hora: partido.hora // Añadir la hora del partido a los datos del equipo
           };
         } catch (error) {
           console.error("Error obteniendo nombres de equipos:", error);
@@ -51,6 +52,7 @@ const PartidosActivos = () => {
             nombreEquipo2: "Nombre no disponible",
             equipo1Cuota: "Cuota no disponible",
             equipo2Cuota: "Cuota no disponible",
+            hora: "Hora no disponible" // Manejar el error de obtener la hora del partido
           };
         }
       })
@@ -87,13 +89,13 @@ const PartidosActivos = () => {
 
       // Crear objeto de apuesta
       const nuevaApuesta = {
-        id:1,
         gasto: 10,
-        ganancias:35,
-        fecha: new Date().toISOString(), // Hora actual del servidor
-        user_id: userId, // Obtener userId del sessionStorage
-        equipo_id: apuestaData.resultadoEquipoGanador, // ID del equipo seleccionado
-        partido_id: partidoSeleccionado.id, // ID del partido
+        ganancias:30,
+        fecha: "2024-02-07", // Hora actual del servidor
+        user_id: 1, // Obtener userId del sessionStorage
+        equipo_id: 1, // ID del equipo seleccionado
+        sala_id: 1,// ID de las equipo seleccionado
+        partido_id: 1, // ID del partido
       };
 
       // Enviar solicitud POST para crear la apuesta
@@ -118,8 +120,14 @@ const PartidosActivos = () => {
     // Después de crear la apuesta, puedes cerrar el modal
     handleCloseModal();
   };
-  const handleToggleCuota = (index) => {
-    setActiveCuotaIndex(index === activeCuotaIndex ? null : index); // Si la cuota ya está activa, la desactiva; de lo contrario, la activa
+  
+  // Función para verificar si la hora del partido es mayor que la hora actual del servidor
+  const isHoraMayorQueActual = (horaPartido) => {
+    const horaPartidoDate = new Date(`2024-02-07 ${horaPartido}`); // Crear un objeto Date con la fecha del partido
+    console.log(horaPartidoDate)
+    const horaActual = new Date(); // Obtener la hora actual del servidor
+    console.log(horaActual)
+    return horaPartidoDate < horaActual; // Devolver true si la hora del partido es mayor que la hora actual
   };
 
   return (
@@ -142,9 +150,11 @@ const PartidosActivos = () => {
               <br />
               Hora: {partido.hora}
             </Card.Text>
+            {/* Deshabilitar el botón si la hora del partido es mayor que la hora actual */}
             <Button
               className="btn text-dark"
               onClick={() => handleShowModal(index)}
+              disabled={isHoraMayorQueActual(partido.hora)}
             >
               Apostar
             </Button>
