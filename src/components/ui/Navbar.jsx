@@ -3,6 +3,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
 import { Link, NavLink } from "react-router-dom";
 import useAuthContext from "../../hooks/useAuthContext";
+import "./index.css"
 
 const navigation = [
   { name: "Home", path: "/", current: true },
@@ -39,7 +40,7 @@ export default function Navbar() {
                 <div className="flex flex-shrink-0 items-center">
                   <img
                     className="h-8 w-auto"
-                    src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                    src="/logo.png"
                     alt="Your Company"
                   />
                 </div>

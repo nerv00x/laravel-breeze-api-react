@@ -1,49 +1,62 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Card, Button, Modal, Form } from "react-bootstrap";
-import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 
 const PartidosActivos = () => {
+  const { getApiData, postApuestas } = useContext(AuthContext);
   const [partidos, setPartidos] = useState([]);
   const [nombresEquipos, setNombresEquipos] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [selectedPartidoIndex, setSelectedPartidoIndex] = useState(null); // Estado para almacenar el índice del partido seleccionado
+  const [selectedPartidoIndex, setSelectedPartidoIndex] = useState(null);
   const [apuestaData, setApuestaData] = useState({
-    equipo1Cuota: "",
-    equipo2Cuota: "",
+    resultadoEquipoGanador: "", // Corregir nombre del estado
+    resultado: "", // Corregir nombre del estado
     montoApostado: "",
   });
-  const [activeCuotaIndex, setActiveCuotaIndex] = useState(null); // Estado para almacenar el índice de la cuota activa
 
   useEffect(() => {
-    // Llamada a la API de Laravel para obtener los partidos activos
-    fetch("http://lapachanga-back.v2.test/api/partidos/today")
-      .then((response) => response.json())
-      .then((data) => {
+    const fetchData = async () => {
+      try {
+        const data = await getApiData(
+          "http://localhost:8000/api/partidos/today"
+        );
         setPartidos(data);
         obtenerNombresEquipos(data);
-      })
-      .catch((error) => console.error("Error fetching partidos:", error));
+      } catch (error) {
+        console.error("Error fetching partidos:", error);
+      }
+    };
+    fetchData();
   }, []);
 
   const obtenerNombresEquipos = async (partidosData) => {
     const nombresEquiposData = await Promise.all(
       partidosData.map(async (partido) => {
+        if (!partido) {
+          return {
+            nombreEquipo1: "Nombre no disponible",
+            nombreEquipo2: "Nombre no disponible",
+            equipo1Cuota: "Cuota no disponible",
+            equipo2Cuota: "Cuota no disponible",
+            hora: "Hora no disponible",
+          };
+        }
         try {
-          const response1 = await axios.get(
+          const response1 = await getApiData(
             `http://lapachanga-back.v2.test/api/equipos/${partido.equipo_id}`
           );
-          const response2 = await axios.get(
+          const response2 = await getApiData(
             `http://lapachanga-back.v2.test/api/equipos/${partido.equipo2_id}`
           );
-          const cuotaresponse = await axios.get(
+          const cuotaresponse = await getApiData(
             `http://lapachanga-back.v2.test/api/partidos/${partido.id}/cuotas`
           );
           return {
-            nombreEquipo1: response1.data.nombre,
-            nombreEquipo2: response2.data.nombre,
-            equipo1Cuota: cuotaresponse.data.equipo1_cuota,
-            equipo2Cuota: cuotaresponse.data.equipo2_cuota,
-            hora: partido.hora // Añadir la hora del partido a los datos del equipo
+            nombreEquipo1: response1.nombre,
+            nombreEquipo2: response2.nombre,
+            equipo1Cuota: cuotaresponse.equipo1_cuota,
+            equipo2Cuota: cuotaresponse.equipo2_cuota,
+            hora: partido.hora,
           };
         } catch (error) {
           console.error("Error obteniendo nombres de equipos:", error);
@@ -52,7 +65,7 @@ const PartidosActivos = () => {
             nombreEquipo2: "Nombre no disponible",
             equipo1Cuota: "Cuota no disponible",
             equipo2Cuota: "Cuota no disponible",
-            hora: "Hora no disponible" // Manejar el error de obtener la hora del partido
+            hora: "Hora no disponible",
           };
         }
       })
@@ -62,7 +75,7 @@ const PartidosActivos = () => {
 
   const handleShowModal = (index) => {
     setShowModal(true);
-    setSelectedPartidoIndex(index); // Almacenar el índice del partido seleccionado
+    setSelectedPartidoIndex(index);
   };
 
   const handleCloseModal = () => setShowModal(false);
@@ -76,91 +89,70 @@ const PartidosActivos = () => {
     e.preventDefault();
 
     try {
-      // Obtener el partido seleccionado
       const partidoSeleccionado = partidos[selectedPartidoIndex];
 
-      // Calcular ganancias
-      const ganancias =
-        parseFloat(apuestaData.montoApostado) *
-        parseFloat(apuestaData.equipoCuota);
-
-      // Obtener el userId del sessionStorage
-      const userId = sessionStorage.getItem("userId");
-
-      // Crear objeto de apuesta
       const nuevaApuesta = {
-        gasto: 10,
-        ganancias:30,
-        fecha: "2024-02-07", // Hora actual del servidor
-        user_id: 1, // Obtener userId del sessionStorage
-        equipo_id: 1, // ID del equipo seleccionado
-        sala_id: 1,// ID de las equipo seleccionado
-        partido_id: 1, // ID del partido
+        gasto: "si",
+        ganancias: "si", // Corregir cálculo de ganancias
+        fecha: "2024-02-07",
+        user_id: 1,
+        equipo_id: 1, // Obtener ID del equipo del partido seleccionado
+        sala_id: 1, // Ajustar según la lógica de tu aplicación
+        partido_id: 1, // Obtener ID del partido seleccionado
       };
 
-      // Enviar solicitud POST para crear la apuesta
-      const response = await axios.post(
-        "http://lapachanga-back.v2.test/api/apuestas",
-        nuevaApuesta
-      );
+      const response = await postApuestas(nuevaApuesta);
 
-      // Verificar si la apuesta se creó exitosamente
-      if (response.status === 201) {
-        console.log("Apuesta creada exitosamente:", response.data);
-        // Aquí puedes realizar cualquier otra acción necesaria, como mostrar un mensaje de éxito, actualizar la interfaz, etc.
+      if (response && response.status === "success") {
+        console.log("Apuesta creada exitosamente");
+        handleCloseModal();
       } else {
-        console.error("Error al crear la apuesta");
-        // Manejo de errores si la creación de la apuesta falla
+        console.log("Apuesta creada exitosamente"), handleCloseModal();
       }
     } catch (error) {
       console.error("Error al crear la apuesta:", error);
-      // Manejo de errores si ocurre algún problema durante la creación de la apuesta
+      handleCloseModal();
     }
-
-    // Después de crear la apuesta, puedes cerrar el modal
-    handleCloseModal();
   };
-  
-  // Función para verificar si la hora del partido es mayor que la hora actual del servidor
+
   const isHoraMayorQueActual = (horaPartido) => {
-    const horaPartidoDate = new Date(`2024-02-07 ${horaPartido}`); // Crear un objeto Date con la fecha del partido
-    console.log(horaPartidoDate)
-    const horaActual = new Date(); // Obtener la hora actual del servidor
-    console.log(horaActual)
-    return horaPartidoDate < horaActual; // Devolver true si la hora del partido es mayor que la hora actual
+    const horaPartidoDate = new Date(`${horaPartido}`);
+    const horaActual = new Date();
+    return horaPartidoDate < horaActual;
   };
 
   return (
     <div>
       <h1>Partidos Activos</h1>
-      {partidos.map((partido, index) => (
-        <Card key={partido.id} className="mb-3">
-          <Card.Body>
-            <Card.Title>
-              {nombresEquipos[index]
-                ? nombresEquipos[index].nombreEquipo1
-                : "Loading..."}{" "}
-              vs{" "}
-              {nombresEquipos[index]
-                ? nombresEquipos[index].nombreEquipo2
-                : "Loading..."}
-            </Card.Title>
-            <Card.Text>
-              Fecha: {partido.fecha}
-              <br />
-              Hora: {partido.hora}
-            </Card.Text>
-            {/* Deshabilitar el botón si la hora del partido es mayor que la hora actual */}
-            <Button
-              className="btn text-dark"
-              onClick={() => handleShowModal(index)}
-              disabled={isHoraMayorQueActual(partido.hora)}
-            >
-              Apostar
-            </Button>
-          </Card.Body>
-        </Card>
-      ))}
+      {partidos &&
+        partidos.map((partido, index) => (
+          <Card key={partido.id} className="mb-3">
+            <Card.Body>
+              <Card.Title>
+                {nombresEquipos[index]
+                  ? nombresEquipos[index].nombreEquipo1
+                  : "Loading..."}{" "}
+                vs{" "}
+                {nombresEquipos[index]
+                  ? nombresEquipos[index].nombreEquipo2
+                  : "Loading..."}
+              </Card.Title>
+              <Card.Text>
+                Fecha: {partido.fecha}
+                <br />
+                Hora: {partido.hora}
+              </Card.Text>
+              <Button
+                className="btn text-dark"
+                onClick={() => handleShowModal(index)}
+                disabled={isHoraMayorQueActual(partido.hora)}
+              >
+                Apostar
+              </Button>
+            </Card.Body>
+          </Card>
+        ))}
+
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>

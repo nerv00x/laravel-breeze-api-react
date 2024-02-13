@@ -1,0 +1,72 @@
+nav {
+    background-color: #4a5568; /* Cambia este color según tus preferencias */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  nav img {
+    height: 40px; /* Ajusta la altura según tu logotipo */
+  }
+  
+  nav .nav-link {
+    color: #cbd5e0; /* Color del texto de los enlaces */
+    text-decoration: none;
+    padding: 10px 15px;
+  }
+  
+  nav .nav-link:hover,
+  nav .nav-link.active {
+    background-color: #680000; /* Cambia este color según tus preferencias */
+    color: #fff; /* Cambia este color según tus preferencias */
+  }
+  
+  /* Estilos para el menú desplegable en pantallas pequeñas */
+  nav .mobile-menu {
+    display: none;
+  }
+  
+  nav .mobile-menu.active {
+    display: block;
+  }
+  
+  .mobile-menu-item {
+    padding: 10px 0;
+  }
+  
+  /* Estilos para el perfil de usuario */
+  .user-profile {
+    display: flex;
+    align-items: center;
+  }
+  
+  .user-profile img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  
+  .user-profile .dropdown-menu {
+    position: absolute;
+    top: 60px; /* Ajusta la posición según sea necesario */
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #cbd5e0;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: none;
+  }
+  
+  .user-profile:hover .dropdown-menu {
+    display: block;
+  }
+  
+  .dropdown-item {
+    padding: 10px 15px;
+    color: #4a5568; /* Cambia este color según tus preferencias */
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropdown-item:hover {
+    background-color: #cbd5e0; /* Cambia este color según tus preferencias */
+  }
