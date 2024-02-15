@@ -6,7 +6,7 @@ export default function AuthLayout() {
     if (!loading && !user) {
         return <Navigate to="/login"/>;
     }
-    return (<div className="flex flex-col h-screen bg-slate-100">
+    return (<div className="flex flex-col h-screen">
       <Navbar />
       <div className="h-full py-10">
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">

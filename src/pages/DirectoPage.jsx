@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Card, Button, Modal, Form } from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
+import "../App.css"
 
 const PartidosActivos = () => {
   const { getApiData, postApuestas } = useContext(AuthContext);
@@ -119,6 +120,7 @@ const PartidosActivos = () => {
         handleCloseModal();
       } else {
         console.log("Error al crear la apuesta");
+        handleCloseModal();
       }
     } catch (error) {
       console.error("Error al crear la apuesta:", error);
@@ -134,10 +136,10 @@ const PartidosActivos = () => {
   console.log
   return (
     <div>
-      <h1>Partidos Activos</h1>
+      <h1 className="text-white text-center mb-3">Partidos Activos</h1>
       {partidos &&
         partidos.map((partido, index) => (
-          <Card key={partido.id} className="mb-3">
+          <Card key={partido.id} className="mb-3" id="card">
             <Card.Body>
               <Card.Title>
                 {nombresEquipos[index]

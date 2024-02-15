@@ -108,7 +108,7 @@ const PartidosActivos = () => {
         fecha: new Date().toISOString().split("T")[0],
         user_id:user_id,
         equipo_id:equipo_id,
-        sala_id: 1, // Ajustar según la lógica de tu aplicación
+        sala_id: 1, 
         partido_id: partidoSeleccionado.id,
       };
       console.log(nuevaApuesta)
@@ -134,7 +134,7 @@ const PartidosActivos = () => {
   console.log
   return (
     <div>
-      <h1>Partidos Activos</h1>
+      <h1 className="bg-dark text-white">Partidos Activos</h1>
       {partidos &&
         partidos.map((partido, index) => (
           <Card key={partido.id} className="mb-3">
