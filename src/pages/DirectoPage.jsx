@@ -9,9 +9,7 @@ const PartidosActivos = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedPartidoIndex, setSelectedPartidoIndex] = useState(null);
   const [apuestaData, setApuestaData] = useState({
-    resultadoEquipoGanador: "", // Corregir nombre del estado
-    resultado: "", // Corregir nombre del estado
-    montoApostado: "",
+    montoApostado: 10,
   });
 
   useEffect(() => {
@@ -90,24 +88,37 @@ const PartidosActivos = () => {
 
     try {
       const partidoSeleccionado = partidos[selectedPartidoIndex];
+      const cuotaEquipoSeleccionado =
+        apuestaData.resultadoEquipoGanador ===
+        nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
+          ? nombresEquipos[selectedPartidoIndex]?.equipo1Cuota
+          : nombresEquipos[selectedPartidoIndex]?.equipo2Cuota;
+ 
+      const user_id = sessionStorage.getItem("userId")
+      const equipo_id = apuestaData.resultadoEquipoGanador ===
+      nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
+        ? partidos[selectedPartidoIndex].equipo_id
+        : partidos[selectedPartidoIndex].equipo2_id;
+
+      const ganancias = apuestaData.montoApostado * cuotaEquipoSeleccionado;
 
       const nuevaApuesta = {
-        gasto: "si",
-        ganancias: "si", // Corregir cálculo de ganancias
-        fecha: "2024-02-07",
-        user_id: 1,
-        equipo_id: 1, // Obtener ID del equipo del partido seleccionado
+        gasto: apuestaData.montoApostado.toString(),
+        ganancias: ganancias.toString() ,
+        fecha: new Date().toISOString().split("T")[0],
+        user_id:user_id,
+        equipo_id:equipo_id,
         sala_id: 1, // Ajustar según la lógica de tu aplicación
-        partido_id: 1, // Obtener ID del partido seleccionado
+        partido_id: partidoSeleccionado.id,
       };
-
+      console.log(nuevaApuesta)
       const response = await postApuestas(nuevaApuesta);
 
       if (response && response.status === "success") {
         console.log("Apuesta creada exitosamente");
         handleCloseModal();
       } else {
-        console.log("Apuesta creada exitosamente"), handleCloseModal();
+        console.log("Error al crear la apuesta");
       }
     } catch (error) {
       console.error("Error al crear la apuesta:", error);
@@ -120,7 +131,7 @@ const PartidosActivos = () => {
     const horaActual = new Date();
     return horaPartidoDate < horaActual;
   };
-
+  console.log
   return (
     <div>
       <h1>Partidos Activos</h1>
