@@ -42,13 +42,13 @@ const PartidosActivos = () => {
         }
         try {
           const response1 = await getApiData(
-            `http://lapachanga-back.v2.test/api/equipos/${partido.equipo_id}`
+            `http://localhost:8000/api/equipos/${partido.equipo_id}`
           );
           const response2 = await getApiData(
-            `http://lapachanga-back.v2.test/api/equipos/${partido.equipo2_id}`
+            `http://localhost:8000/api/equipos/${partido.equipo2_id}`
           );
           const cuotaresponse = await getApiData(
-            `http://lapachanga-back.v2.test/api/partidos/${partido.id}/cuotas`
+            `http://localhost:8000/partidos/${partido.id}/cuotas`
           );
           return {
             nombreEquipo1: response1.nombre,
