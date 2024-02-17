@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Card, Button, Modal, Form } from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
+import "../App.css";
 
 const PartidosActivos = () => {
   const { getApiData, postApuestas } = useContext(AuthContext);
@@ -11,6 +12,8 @@ const PartidosActivos = () => {
   const [apuestaData, setApuestaData] = useState({
     montoApostado: 10,
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [partidosPerPage] = useState(5);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,7 +22,7 @@ const PartidosActivos = () => {
           "http://localhost:8000/api/partidos/this-week"
         );
         setPartidos(data);
-        obtenerNombresEquipos(data);
+        obtenerNombresEquipos(data);  
       } catch (error) {
         console.error("Error fetching partidos:", error);
       }
@@ -94,7 +97,7 @@ const PartidosActivos = () => {
           ? nombresEquipos[selectedPartidoIndex]?.equipo1Cuota
           : nombresEquipos[selectedPartidoIndex]?.equipo2Cuota;
  
-      const user_id = sessionStorage.getItem("userId")
+      const user_id = sessionStorage.getItem("userId");
       const equipo_id = apuestaData.resultadoEquipoGanador ===
       nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
         ? partidos[selectedPartidoIndex].equipo_id
@@ -104,14 +107,14 @@ const PartidosActivos = () => {
 
       const nuevaApuesta = {
         gasto: apuestaData.montoApostado.toString(),
-        ganancias: ganancias.toString() ,
+        ganancias: ganancias.toString(),
         fecha: new Date().toISOString().split("T")[0],
-        user_id:user_id,
-        equipo_id:equipo_id,
-        sala_id: 1, 
+        user_id: user_id,
+        equipo_id: equipo_id,
+        sala_id: 1, // Ajustar según la lógica de tu aplicación
         partido_id: partidoSeleccionado.id,
       };
-      console.log(nuevaApuesta)
+      console.log(nuevaApuesta);
       const response = await postApuestas(nuevaApuesta);
 
       if (response && response.status === "success") {
@@ -119,6 +122,7 @@ const PartidosActivos = () => {
         handleCloseModal();
       } else {
         console.log("Error al crear la apuesta");
+        handleCloseModal();
       }
     } catch (error) {
       console.error("Error al crear la apuesta:", error);
@@ -131,120 +135,69 @@ const PartidosActivos = () => {
     const horaActual = new Date();
     return horaPartidoDate < horaActual;
   };
-  console.log
+
+  // Calcula los índices de los partidos a mostrar en la página actual
+  const indexOfLastPartido = currentPage * partidosPerPage;
+  const indexOfFirstPartido = indexOfLastPartido - partidosPerPage;
+  const currentPartidos = partidos.slice(indexOfFirstPartido, indexOfLastPartido);
+
+  // Cambia a la página siguiente
+  const paginateNext = () => {
+    setCurrentPage(currentPage + 1);
+  };
+
+  // Cambia a la página anterior
+  const paginatePrev = () => {
+    setCurrentPage(currentPage - 1);
+  };
+
   return (
     <div>
-      <h1 className="bg-dark text-white">Partidos Activos</h1>
-      {partidos &&
-        partidos.map((partido, index) => (
-          <Card key={partido.id} className="mb-3">
-            <Card.Body>
-              <Card.Title>
-                {nombresEquipos[index]
-                  ? nombresEquipos[index].nombreEquipo1
-                  : "Loading..."}{" "}
-                vs{" "}
-                {nombresEquipos[index]
-                  ? nombresEquipos[index].nombreEquipo2
-                  : "Loading..."}
-              </Card.Title>
-              <Card.Text>
-                Fecha: {partido.fecha}
-                <br />
-                Hora: {partido.hora}
-              </Card.Text>
-              <Button
-                className="btn text-dark"
-                onClick={() => handleShowModal(index)}
-                disabled={isHoraMayorQueActual(partido.hora)}
-              >
-                Apostar
-              </Button>
-            </Card.Body>
-          </Card>
-        ))}
-
-      <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {nombresEquipos[selectedPartidoIndex]
-              ? nombresEquipos[selectedPartidoIndex].nombreEquipo1
-              : ""}{" "}
-            vs{" "}
-            {nombresEquipos[selectedPartidoIndex]
-              ? nombresEquipos[selectedPartidoIndex].nombreEquipo2
-              : ""}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>
-            Cuota de{" "}
-            {nombresEquipos[selectedPartidoIndex]
-              ? nombresEquipos[selectedPartidoIndex].nombreEquipo1
-              : ""}
-            :{" "}
-            {nombresEquipos[selectedPartidoIndex]
-              ? nombresEquipos[selectedPartidoIndex].equipo1Cuota
-              : ""}
-          </p>
-          <p>
-            Cuota de{" "}
-            {nombresEquipos[selectedPartidoIndex]
-              ? nombresEquipos[selectedPartidoIndex].nombreEquipo2
-              : ""}
-            :{" "}
-            {nombresEquipos[selectedPartidoIndex]
-              ? nombresEquipos[selectedPartidoIndex].equipo2Cuota
-              : ""}
-          </p>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="resultadoEquipoGanador">
-              <Form.Label>Selecciona el equipo ganador</Form.Label>
-              <Form.Control
-                as="select"
-                name="resultadoEquipoGanador"
-                onChange={handleChange}
-              >
-                <option
-                  value={nombresEquipos[selectedPartidoIndex]?.nombreEquipo1}
-                >
-                  {nombresEquipos[selectedPartidoIndex]?.nombreEquipo1}
-                </option>
-                <option
-                  value={nombresEquipos[selectedPartidoIndex]?.nombreEquipo2}
-                >
-                  {nombresEquipos[selectedPartidoIndex]?.nombreEquipo2}
-                </option>
-              </Form.Control>
-            </Form.Group>
-            <Form.Group controlId="resultado">
-              <Form.Label>Selecciona el resultado</Form.Label>
-              <Form.Control
-                as="select"
-                name="resultado"
-                onChange={handleChange}
-              >
-                <option value="3-0">3-0</option>
-                <option value="3-1">3-1</option>
-                <option value="3-2">3-2</option>
-              </Form.Control>
-            </Form.Group>
-            <Form.Group controlId="montoApostado">
-              <Form.Label>Monto a Apostar</Form.Label>
-              <Form.Control
-                type="number"
-                name="montoApostado"
-                value={apuestaData.montoApostado}
-                onChange={handleChange}
-                placeholder="Introduce el monto"
-              />
-            </Form.Group>
-            <Button variant="primary btn text-dark" type="submit">
-              Crear Apuesta
+      <h1 className="text-white text-center mb-3">Partidos Activos</h1>
+      {currentPartidos.map((partido, index) => (
+        <Card key={partido.id} className="mb-3" id="card">
+          <Card.Body>
+            <Card.Title>
+              {nombresEquipos[index]
+                ? nombresEquipos[index].nombreEquipo1
+                : "Loading..."}{" "}
+              vs{" "}
+              {nombresEquipos[index]
+                ? nombresEquipos[index].nombreEquipo2
+                : "Loading..."}
+            </Card.Title>
+            <Card.Text>
+              Fecha: {partido.fecha}
+              <br />
+              Hora: {partido.hora}
+            </Card.Text>
+            <Button
+              className="btn text-dark"
+              onClick={() => handleShowModal(index)}
+              disabled={isHoraMayorQueActual(partido.hora)}
+            >
+              Apostar
             </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
+          </Card.Body>
+        </Card>
+      ))}
+      <div className="pagination">
+        <Button
+          variant="secondary"
+          onClick={paginatePrev}
+          disabled={currentPage === 1}
+          className=" mr-3"
+        >
+          Anterior
+        </Button>
+        <Button
+          variant="secondary"
+          onClick={paginateNext}
+          disabled={indexOfLastPartido >= partidos.length}
+        >
+          Siguiente
+        </Button>
+      </div>
     </div>
   );
 };
