@@ -14,6 +14,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import DirectoPage from "./pages/DirectoPage";
 import SalasPage from "./pages/SalasPage";
 import ApuestasPage from "./pages/ApuestasPage";
+import Admin from "./pages//Admin";
 import "./App.css"
 
 export default function App() {
@@ -32,6 +33,8 @@ export default function App() {
           <Route path="/directos" element={<DirectoPage />} />
           <Route path="/salas" element={<SalasPage />} />
           <Route path="/apuestas" element={<ApuestasPage />} />
+          <Route path="/admin" element={<Admin />} />
+
         </Route>
         <Route
           element={

@@ -16,7 +16,7 @@ const PartidosActivos = () => {
     const fetchData = async () => {
       try {
         const data = await getApiData(
-          "http://localhost:8000/api/partidos/this-week"
+          "http://lapachanga-back.test/api/partidos/this-week"
         );
         setPartidos(data);
         obtenerNombresEquipos(data);
@@ -24,8 +24,11 @@ const PartidosActivos = () => {
         console.error("Error fetching partidos:", error);
       }
     };
+  
     fetchData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Dejamos la lista de dependencias vacía y desactivamos la advertencia del linter
+  
 
   const obtenerNombresEquipos = async (partidosData) => {
     const nombresEquiposData = await Promise.all(
@@ -41,13 +44,13 @@ const PartidosActivos = () => {
         }
         try {
           const response1 = await getApiData(
-            `http://lapachanga-back.v2.test/api/equipos/${partido.equipo_id}`
+            `http://lapachanga-back.test/api/equipos/${partido.equipo_id}`
           );
           const response2 = await getApiData(
-            `http://lapachanga-back.v2.test/api/equipos/${partido.equipo2_id}`
+            `http://lapachanga-back.test/api/equipos/${partido.equipo2_id}`
           );
           const cuotaresponse = await getApiData(
-            `http://lapachanga-back.v2.test/api/partidos/${partido.id}/cuotas`
+            `http://lapachanga-back.test/api/partidos/${partido.id}/cuotas`
           );
           return {
             nombreEquipo1: response1.nombre,
