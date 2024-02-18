@@ -1,5 +1,6 @@
-import React from 'react';
+import { useContext } from 'react';
 import CrearPartido from '../components/CrearPartido';
+import { AuthContext } from "../context/AuthContext";
 import ActualizarPartido from '../components/ActualizarPartido';
 import "../App.css"
 
