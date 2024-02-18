@@ -11,6 +11,7 @@ const PartidosActivos = () => {
   const [selectedPartidoIndex, setSelectedPartidoIndex] = useState(null);
   const [apuestaData, setApuestaData] = useState({
     montoApostado: 10,
+    resultadoEquipoGanador: '' // Añadido para almacenar el resultado seleccionado
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [partidosPerPage] = useState(5);
@@ -75,11 +76,14 @@ const PartidosActivos = () => {
   };
 
   const handleShowModal = (index) => {
-    setShowModal(true);
     setSelectedPartidoIndex(index);
+    setShowModal(true);
   };
 
-  const handleCloseModal = () => setShowModal(false);
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedPartidoIndex(null); // Limpiar el índice seleccionado cuando se cierra el modal
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -92,14 +96,12 @@ const PartidosActivos = () => {
     try {
       const partidoSeleccionado = partidos[selectedPartidoIndex];
       const cuotaEquipoSeleccionado =
-        apuestaData.resultadoEquipoGanador ===
-        nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
+        apuestaData.resultadoEquipoGanador === nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
           ? nombresEquipos[selectedPartidoIndex]?.equipo1Cuota
           : nombresEquipos[selectedPartidoIndex]?.equipo2Cuota;
- 
+
       const user_id = sessionStorage.getItem("userId");
-      const equipo_id = apuestaData.resultadoEquipoGanador ===
-      nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
+      const equipo_id = apuestaData.resultadoEquipoGanador === nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
         ? partidos[selectedPartidoIndex].equipo_id
         : partidos[selectedPartidoIndex].equipo2_id;
 
@@ -158,13 +160,8 @@ const PartidosActivos = () => {
         <Card key={partido.id} className="mb-3" id="card">
           <Card.Body>
             <Card.Title>
-              {nombresEquipos[index]
-                ? nombresEquipos[index].nombreEquipo1
-                : "Loading..."}{" "}
-              vs{" "}
-              {nombresEquipos[index]
-                ? nombresEquipos[index].nombreEquipo2
-                : "Loading..."}
+              {nombresEquipos[index] ? nombresEquipos[index].nombreEquipo1 : "Loading..."} vs{" "}
+              {nombresEquipos[index] ? nombresEquipos[index].nombreEquipo2 : "Loading..."}
             </Card.Title>
             <Card.Text>
               Fecha: {partido.fecha}
@@ -198,6 +195,44 @@ const PartidosActivos = () => {
           Siguiente
         </Button>
       </div>
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Realizar Apuesta</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group controlId="formResultado">
+              <Form.Label>Resultado</Form.Label>
+              <Form.Control
+                as="select"
+                name="resultadoEquipoGanador"
+                onChange={handleChange}
+                value={apuestaData.resultadoEquipoGanador}
+              >
+                <option value="">Seleccione un equipo</option>
+                <option value={nombresEquipos[selectedPartidoIndex]?.nombreEquipo1}>
+                  {nombresEquipos[selectedPartidoIndex]?.nombreEquipo1}
+                </option>
+                <option value={nombresEquipos[selectedPartidoIndex]?.nombreEquipo2}>
+                  {nombresEquipos[selectedPartidoIndex]?.nombreEquipo2}
+                </option>
+              </Form.Control>
+            </Form.Group>
+            <Form.Group controlId="formMonto">
+              <Form.Label>Monto Apostado</Form.Label>
+              <Form.Control
+                type="number"
+                name="montoApostado"
+                onChange={handleChange}
+                value={apuestaData.montoApostado}
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit">
+              Realizar Apuesta
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };
