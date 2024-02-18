@@ -1,7 +1,7 @@
-import React, { useState, useContext } from 'react';
-import axios from 'axios';
-import { AuthContext } from '../context/AuthContext';
-
+import React, { useState, useEffect, useContext } from "react";
+import { Card, Button, Modal, Form } from "react-bootstrap";
+import { AuthContext } from "../context/AuthContext";
+import "../App.css"
 function CrearPartido() {
   const [partido, setPartido] = useState({
     mapa: '',
@@ -15,7 +15,6 @@ function CrearPartido() {
     liga_id: ''
   });
 
-  const { csrfToken } = useContext(AuthContext);
 
 
   const handleChange = (e) => {
@@ -25,12 +24,7 @@ function CrearPartido() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Realiza la llamada post con axios
-      await axios.post('http://lapachanga-back.test/api/partidos', partido, {
-        headers: {
-          'X-CSRF-TOKEN': csrfToken, // Pasa el token CSRF en las cabeceras
-        }
-      });
+      // RUTA http://lapachanga-back.test/api/partidos
       alert('Partido creado con éxito');
       // Resetea el estado de partido
       setPartido({
@@ -44,6 +38,8 @@ function CrearPartido() {
         ganador: '',
         liga_id: ''
       });
+      const response = await postApuestas(setPartido);
+
     } catch (error) {
       console.error('Hubo un error al crear el partido', error);
     }

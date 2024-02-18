@@ -16,7 +16,7 @@ function ActualizarPartido({ match }) {
 
   useEffect(() => {
     const fetchPartido = async () => {
-      const { data } = await axios.get(`http://miapi.com/partidos/${match.params.id}`);
+      const { data } = await axios.get(`http://lapachanga-back.test/api/partidos${match.params.id}`);
       setPartido(data);
     };
     fetchPartido();
@@ -29,7 +29,7 @@ function ActualizarPartido({ match }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://miapi.com/partidos/${match.params.id}`, partido);
+      await axios.put(`http://lapachanga-back.test/api/partidos/update/${match.params.id}`, partido);
       alert('Partido actualizado con éxito');
     } catch (error) {
       console.error('Hubo un error al actualizar el partido', error);
