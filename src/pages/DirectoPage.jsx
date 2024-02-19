@@ -11,7 +11,7 @@ const PartidosActivos = () => {
   const [selectedPartidoIndex, setSelectedPartidoIndex] = useState(null);
   const [apuestaData, setApuestaData] = useState({
     montoApostado: 10,
-    resultadoEquipoGanador: '' // Añadido para almacenar el resultado seleccionado
+    resultadoEquipoGanador: "", // Añadido para almacenar el resultado seleccionado
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [partidosPerPage] = useState(5);
@@ -96,14 +96,17 @@ const PartidosActivos = () => {
     try {
       const partidoSeleccionado = partidos[selectedPartidoIndex];
       const cuotaEquipoSeleccionado =
-        apuestaData.resultadoEquipoGanador === nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
+        apuestaData.resultadoEquipoGanador ===
+        nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
           ? nombresEquipos[selectedPartidoIndex]?.equipo1Cuota
           : nombresEquipos[selectedPartidoIndex]?.equipo2Cuota;
 
       const user_id = sessionStorage.getItem("userId");
-      const equipo_id = apuestaData.resultadoEquipoGanador === nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
-        ? partidos[selectedPartidoIndex].equipo_id
-        : partidos[selectedPartidoIndex].equipo2_id;
+      const equipo_id =
+        apuestaData.resultadoEquipoGanador ===
+        nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
+          ? partidos[selectedPartidoIndex].equipo_id
+          : partidos[selectedPartidoIndex].equipo2_id;
 
       const ganancias = apuestaData.montoApostado * cuotaEquipoSeleccionado;
 
@@ -141,7 +144,10 @@ const PartidosActivos = () => {
   // Calcula los índices de los partidos a mostrar en la página actual
   const indexOfLastPartido = currentPage * partidosPerPage;
   const indexOfFirstPartido = indexOfLastPartido - partidosPerPage;
-  const currentPartidos = partidos.slice(indexOfFirstPartido, indexOfLastPartido);
+  const currentPartidos = partidos.slice(
+    indexOfFirstPartido,
+    indexOfLastPartido
+  );
 
   // Cambia a la página siguiente
   const paginateNext = () => {
@@ -160,8 +166,13 @@ const PartidosActivos = () => {
         <Card key={partido.id} className="mb-3" id="card">
           <Card.Body>
             <Card.Title>
-              {nombresEquipos[index] ? nombresEquipos[index].nombreEquipo1 : "Loading..."} vs{" "}
-              {nombresEquipos[index] ? nombresEquipos[index].nombreEquipo2 : "Loading..."}
+              {nombresEquipos[index]
+                ? nombresEquipos[index].nombreEquipo1
+                : "Loading..."}{" "}
+              vs{" "}
+              {nombresEquipos[index]
+                ? nombresEquipos[index].nombreEquipo2
+                : "Loading..."}
             </Card.Title>
             <Card.Text>
               Fecha: {partido.fecha}
@@ -200,9 +211,19 @@ const PartidosActivos = () => {
           <Modal.Title>Realizar Apuesta</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <div>
+            <p>
+              {nombresEquipos[selectedPartidoIndex]?.nombreEquipo1} - Cuota:{" "}
+              {nombresEquipos[selectedPartidoIndex]?.equipo1Cuota}
+            </p>
+            <p>
+              {nombresEquipos[selectedPartidoIndex]?.nombreEquipo2} - Cuota:{" "}
+              {nombresEquipos[selectedPartidoIndex]?.equipo2Cuota}
+            </p>
+          </div>
           <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="formResultado">
-              <Form.Label>Resultado</Form.Label>
+            <Form.Group controlId="formEquipo">
+              <Form.Label>Seleccion equipo</Form.Label>
               <Form.Control
                 as="select"
                 name="resultadoEquipoGanador"
@@ -210,14 +231,11 @@ const PartidosActivos = () => {
                 value={apuestaData.resultadoEquipoGanador}
               >
                 <option value="">Seleccione un equipo</option>
-                <option value={nombresEquipos[selectedPartidoIndex]?.nombreEquipo1}>
-                  {nombresEquipos[selectedPartidoIndex]?.nombreEquipo1}
-                </option>
-                <option value={nombresEquipos[selectedPartidoIndex]?.nombreEquipo2}>
-                  {nombresEquipos[selectedPartidoIndex]?.nombreEquipo2}
-                </option>
+                <option value="Equipo1">{nombresEquipos[selectedPartidoIndex]?.nombreEquipo1}</option>
+                <option value="Equipo2">{nombresEquipos[selectedPartidoIndex]?.nombreEquipo2}</option>
               </Form.Control>
             </Form.Group>
+
             <Form.Group controlId="formMonto">
               <Form.Label>Monto Apostado</Form.Label>
               <Form.Control
