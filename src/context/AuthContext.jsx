@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useEffect, useState } from "react";
 import axios from "../lib/axios"; // Asegúrate de importar axios desde la ubicación correcta
 import { useNavigate } from "react-router-dom";
