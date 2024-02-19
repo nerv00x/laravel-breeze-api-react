@@ -10,6 +10,8 @@ const navigation = [
   { name: "Directos", path: "/directos", current: false },
   { name: "Salas", path: "/salas", current: false },
   { name: "Apuestas", path: "/apuestas", current: false },
+  { name: "Admin", path: "/admin", current: false },
+
 ];
 
 function classNames(...classes) {
