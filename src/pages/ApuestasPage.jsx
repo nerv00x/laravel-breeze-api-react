@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from "react";
-import { Card, Button, Modal, Form } from "react-bootstrap";
+import { Card, Button, } from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
 
 const ApuestasPage = () => {
@@ -9,6 +10,7 @@ const ApuestasPage = () => {
   const [nombresEquipos, setNombresEquipos] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [partidosPerPage] = useState(5);
+  
 
   useEffect(() => {
     const fetchData = async () => {

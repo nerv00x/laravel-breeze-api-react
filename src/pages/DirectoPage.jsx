@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from "react";
 import { Card, Button, Modal, Form } from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
@@ -14,7 +15,7 @@ const PartidosActivos = () => {
     resultadoEquipoGanador: "", // Añadido para almacenar el resultado seleccionado
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const [partidosPerPage] = useState(5);
+  const [partidosPerPage] = useState(4);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -231,8 +232,24 @@ const PartidosActivos = () => {
                 value={apuestaData.resultadoEquipoGanador}
               >
                 <option value="">Seleccione un equipo</option>
-                <option value="Equipo1">{nombresEquipos[selectedPartidoIndex]?.nombreEquipo1}</option>
-                <option value="Equipo2">{nombresEquipos[selectedPartidoIndex]?.nombreEquipo2}</option>
+                {selectedPartidoIndex !== null && (
+                  <>
+                    <option
+                      value={
+                        nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
+                      }
+                    >
+                      {nombresEquipos[selectedPartidoIndex]?.nombreEquipo1}
+                    </option>
+                    <option
+                      value={
+                        nombresEquipos[selectedPartidoIndex]?.nombreEquipo2
+                      }
+                    >
+                      {nombresEquipos[selectedPartidoIndex]?.nombreEquipo2}
+                    </option>
+                  </>
+                )}
               </Form.Control>
             </Form.Group>
 
