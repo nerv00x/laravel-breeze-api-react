@@ -52,6 +52,19 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const postPartido = async (partidoData) => {
+    try {
+      await csrf(); // Asegúrate de tener definida la función csrf
+      const response = await postApiData("/api/partidos", partidoData);
+      return response;
+    } catch (error) {
+      console.error("Error creating apuesta:", error);
+      throw error;
+    }
+  };
+
+  
+
   // Función para obtener el usuario
   const getUser = async () => {
     try {
@@ -61,6 +74,8 @@ export function AuthProvider({ children }) {
       window.localStorage.setItem(SESSION_NAME, "true");
       // Guardar el ID del usuario en sessionStorage
       sessionStorage.setItem("userId", data.id);
+      sessionStorage.setItem("TipoUsuario", data.rol);
+
     } catch (error) {
       console.error("Error getting user:", error);
     }
@@ -189,6 +204,7 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider
       value={{
+        postPartido,
         getApiData,
         postApiData,
         postApuestas,

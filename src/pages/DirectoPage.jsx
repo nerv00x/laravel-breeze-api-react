@@ -21,7 +21,7 @@ const PartidosActivos = () => {
     const fetchData = async () => {
       try {
         const data = await getApiData(
-          "http://lapachanga-back.test/api/partidos/today"
+          "http://lapachanga-back.v2.test/api/partidos/today"
         );
         setPartidos(data);
         obtenerNombresEquipos(data);
@@ -268,7 +268,7 @@ const PartidosActivos = () => {
                 value={apuestaData.montoApostado}
               />
             </Form.Group>
-            <Button variant="primary" type="submit">
+            <Button variant="primary" type="submit"  className="btn text-dark">
               Realizar Apuesta
             </Button>
           </Form>

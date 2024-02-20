@@ -1,17 +1,16 @@
+
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Fragment } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import useAuthContext from "../../hooks/useAuthContext";
-import "./index.css"
+import "./index.css";
 
-const navigation = [
+const initialNavigation = [
   { name: "Home", path: "/", current: true },
   { name: "Directos", path: "/directos", current: false },
   { name: "Salas", path: "/salas", current: false },
   { name: "Apuestas", path: "/apuestas", current: false },
-  { name: "Admin", path: "/admin", current: false },
-
 ];
 
 function classNames(...classes) {
@@ -20,6 +19,17 @@ function classNames(...classes) {
 
 export default function Navbar() {
   const { logout } = useAuthContext();
+  const [navigation, setNavigation] = useState(initialNavigation);
+
+  useEffect(() => {
+    const user_tipo = sessionStorage.getItem("TipoUsuario");
+    if (user_tipo === "admin" && !navigation.some(item => item.name === "Admin")) {
+      setNavigation(prevNavigation => [
+        ...prevNavigation,
+        { name: "Admin", path: "/admin", current: false }
+      ]);
+    }
+  }, [navigation]);
 
   return (
     <Disclosure as="nav" className="bg-50 shadow-md">
