@@ -30,7 +30,8 @@ export default function Navbar() {
       ]);
     }
   }, [navigation]);
-
+  
+console.log(initialNavigation)
   return (
     <Disclosure as="nav" className="bg-50 shadow-md">
       {({ open }) => (

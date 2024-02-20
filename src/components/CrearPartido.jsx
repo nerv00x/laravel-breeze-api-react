@@ -2,15 +2,16 @@ import React, { useState } from "react";
 import { Form, Button, Card } from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
+import axios from "axios"
 import "../App.css";
 
 function CrearPartido() {
-  const { postPartido } = useContext(AuthContext);
+  const { postApiData, postPartido } = useContext(AuthContext);
   const [partido, setPartido] = useState({
     mapa: "",
     arbitro: "",
-    equipo_id: "",
-    equipo2_id: "",
+    equipo_id: ``,
+    equipo2_id: ``,
     fecha: "",
     hora: "",
     puntuacion: 0,
@@ -31,24 +32,26 @@ function CrearPartido() {
       const nuevoPartido = {
         mapa: partido.mapa,
         arbitro: partido.arbitro,
-        equipo_id: partido.equipo_id,
-        equipo2_id: partido.equipo2_id,
+        equipo_id: partido.equipo_id.toString(),
+        equipo2_id: partido.equipo2_id.toString(),
         fecha: partido.fecha,
         hora: partido.hora,
         puntuacion: partido.puntuacion,
         ganador: partido.ganador,
-        liga_id: partido.liga_id
+        liga_id: partido.liga_id.toString()
       };
-      console.log(nuevoPartido)
+  
+      console.log("Datos del partido:", nuevoPartido); // Agrega este console.log
+  
       const response = await postPartido(nuevoPartido);
-
+     
       if (response && response.status === "success") {
-        console.log("Apuesta creada exitosamente");
+        console.log("Partido creada exitosamente");
       } else {
-        console.log("Error al crear la apuesta");
+        console.log("Error al crea el partido");
       }
     } catch (error) {
-      console.error("Error al crear la apuesta:", error);
+      console.error("Error al crear el partido:", error);
     }
   };
 
@@ -58,7 +61,9 @@ function CrearPartido() {
         <Card>
           <Card.Body>
             <h2 className="text-center mb-4">Crear Nuevo Partido</h2>
+  
             <Form onSubmit={handleSubmit}>
+ 
               <Form.Group controlId="mapa">
                 <Form.Label>Mapa:</Form.Label>
                 <Form.Control
