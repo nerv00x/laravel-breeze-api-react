@@ -23,13 +23,14 @@ export default function Navbar() {
 
   useEffect(() => {
     const user_tipo = sessionStorage.getItem("TipoUsuario");
-    if (user_tipo === "admin" && !navigation.some(item => item.name === "Admin")) {
-      setNavigation(prevNavigation => [
-        ...prevNavigation,
+    if (user_tipo === "admin" && !navigation.some(item => item.name === "Admin")) { //console.log(navigation);
+      setNavigation([
+        ...navigation,
         { name: "Admin", path: "/admin", current: false }
       ]);
     }
-  }, [navigation]);
+    console.log(navigation);
+  }, []);
 
   return (
     <Disclosure as="nav" className="bg-50 shadow-md">

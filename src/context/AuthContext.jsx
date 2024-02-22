@@ -32,7 +32,30 @@ export function AuthProvider({ children }) {
   };
   const postApiData = async (url, data) => {
     try {
+      await csrf();
       const response = await axios.post(url, data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error;
+    }
+  };
+
+  const updateApiData = async (url, data) => {
+    try {
+      await csrf();
+      const response = await axios.put(url, data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error;
+    }
+  };
+
+  const deleteApiData = async (url) => {
+    try {
+      await csrf();
+      const response = await axios.delete(url);
       return response.data;
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -63,8 +86,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  
-
   // Función para obtener el usuario
   const getUser = async () => {
     try {
@@ -75,7 +96,6 @@ export function AuthProvider({ children }) {
       // Guardar el ID del usuario en sessionStorage
       sessionStorage.setItem("userId", data.id);
       sessionStorage.setItem("TipoUsuario", data.rol);
-
     } catch (error) {
       console.error("Error getting user:", error);
     }
@@ -204,6 +224,8 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider
       value={{
+        deleteApiData,
+        updateApiData,
         postPartido,
         getApiData,
         postApiData,

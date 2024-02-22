@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from "react";
 import { Card, Button, Modal, Form } from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
@@ -23,8 +24,11 @@ const PartidosActivos = () => {
         const data = await getApiData(
           "http://lapachanga-back.v2.test/api/partidos/this-week"
         );
-        setPartidos(data);
-        obtenerNombresEquipos(data);
+        // Filtrar solo los partidos del día actual o futuros
+        const currentDate = new Date().toISOString().split("T")[0];
+        const filteredPartidos = data.filter(partido => partido.fecha >= currentDate);
+        setPartidos(filteredPartidos);
+        obtenerNombresEquipos(filteredPartidos);
       } catch (error) {
         console.error("Error fetching partidos:", error);
       }
@@ -42,7 +46,7 @@ const PartidosActivos = () => {
             nombreEquipo2: "Nombre no disponible",
             equipo1Cuota: "Cuota no disponible",
             equipo2Cuota: "Cuota no disponible",
-            hora: "Hora no disponible",
+            fechaHora: "Fecha y hora no disponibles",
           };
         }
         try {
@@ -55,12 +59,15 @@ const PartidosActivos = () => {
           const cuotaresponse = await getApiData(
             `http://lapachanga-back.v2.test/api/partidos/${partido.id}/cuotas`
           );
+          // Combinar fecha y hora
+          const fechaHora = `${partido.fecha}T${partido.hora}`;
+          console.log(fechaHora)
           return {
             nombreEquipo1: response1.nombre,
             nombreEquipo2: response2.nombre,
             equipo1Cuota: cuotaresponse.equipo1_cuota,
             equipo2Cuota: cuotaresponse.equipo2_cuota,
-            hora: partido.hora,
+            fechaHora: fechaHora,
           };
         } catch (error) {
           console.error("Error obteniendo nombres de equipos:", error);
@@ -69,13 +76,14 @@ const PartidosActivos = () => {
             nombreEquipo2: "Nombre no disponible",
             equipo1Cuota: "Cuota no disponible",
             equipo2Cuota: "Cuota no disponible",
-            hora: "Hora no disponible",
+            fechaHora: "Fecha y hora no disponibles",
           };
         }
       })
     );
     setNombresEquipos(nombresEquiposData);
   };
+  
 
   const handleShowModal = (index) => {
     setSelectedPartidoIndex(index);
@@ -139,18 +147,19 @@ const PartidosActivos = () => {
     }
   };
 
-  const isHoraMayorQueActual = (horaPartido) => {
-    // Verificar si la fecha del partido es válida
-    if (!horaPartido || isNaN(Date.parse(horaPartido))) {
-      console.error('La fecha del partido es inválida:', horaPartido);
+  const isHoraMayorQueActual = (fechaHoraPartido) => {
+    console.log(fechaHoraPartido)
+    // Verificar si la fecha y hora del partido son válidas
+    if (!fechaHoraPartido || isNaN(Date.parse(fechaHoraPartido))) {
+      console.error('La fecha y hora del partido son inválidas:', fechaHoraPartido);
       return false;
     }
-  
-    const horaPartidoDate = new Date(horaPartido);
-    const horaActual = new Date();
-    return horaActual > horaPartidoDate;
 
+    const fechaHoraPartidoDate = new Date(fechaHoraPartido);
+    const horaActual = new Date();
+    return horaActual > fechaHoraPartidoDate;
   }
+  
 
   const indexOfLastPartido = currentPage * partidosPerPage;
   const indexOfFirstPartido = indexOfLastPartido - partidosPerPage;
@@ -209,7 +218,7 @@ const PartidosActivos = () => {
             <Button
               className="btn text-dark"
               onClick={() => handleShowModal(index)}
-              disabled={isHoraMayorQueActual(partido.hora)}
+              disabled={isHoraMayorQueActual(`${partido.fecha}T${partido.hora}`)}
             >
               Apostar
             </Button>
