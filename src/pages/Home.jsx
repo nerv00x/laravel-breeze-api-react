@@ -22,11 +22,13 @@ const PartidosActivos = () => {
     const fetchData = async () => {
       try {
         const data = await getApiData(
-          "http://harkaitz.informaticamajada.es/api/partidos/this-week"
+          "http://lapachanga-back.v2.test/api/partidos/this-week"
         );
         // Filtrar solo los partidos del día actual o futuros
         const currentDate = new Date().toISOString().split("T")[0];
-        const filteredPartidos = data.filter(partido => partido.fecha >= currentDate);
+        const filteredPartidos = data.filter(
+          (partido) => partido.fecha >= currentDate
+        );
         setPartidos(filteredPartidos);
         obtenerNombresEquipos(filteredPartidos);
       } catch (error) {
@@ -51,17 +53,17 @@ const PartidosActivos = () => {
         }
         try {
           const response1 = await getApiData(
-            `http://harkaitz.informaticamajada.es/api/equipos/${partido.equipo_id}`
+            `http://lapachanga-back.v2.test/api/equipos/${partido.equipo_id}`
           );
           const response2 = await getApiData(
-            `http://harkaitz.informaticamajada.es/api/equipos/${partido.equipo2_id}`
+            `http://lapachanga-back.v2.test/api/equipos/${partido.equipo2_id}`
           );
           const cuotaresponse = await getApiData(
-            `http://harkaitz.informaticamajada.es/api/partidos/${partido.id}/cuotas`
+            `http://lapachanga-back.v2.test/api/partidos/${partido.id}/cuotas`
           );
           // Combinar fecha y hora
           const fechaHora = `${partido.fecha}T${partido.hora}`;
-          console.log(fechaHora)
+          console.log(fechaHora);
           return {
             nombreEquipo1: response1.nombre,
             nombreEquipo2: response2.nombre,
@@ -83,7 +85,6 @@ const PartidosActivos = () => {
     );
     setNombresEquipos(nombresEquiposData);
   };
-  
 
   const handleShowModal = (index) => {
     setSelectedPartidoIndex(index);
@@ -148,18 +149,28 @@ const PartidosActivos = () => {
   };
 
   const isHoraMayorQueActual = (fechaHoraPartido) => {
-    console.log(fechaHoraPartido)
+    console.log(fechaHoraPartido);
+
+    // Dividir la cadena de fecha y hora en sus componentes
+    const [fecha, hora] = fechaHoraPartido.split("T");
+    const [año, mes, dia] = fecha.split("-");
+    const [horaPartido] = hora.split(":");
+
+    // Crear un objeto Date con los componentes separados
+    const fechaHoraPartidoDate = new Date(año, mes - 1, dia, horaPartido);
+
     // Verificar si la fecha y hora del partido son válidas
-    if (!fechaHoraPartido || isNaN(Date.parse(fechaHoraPartido))) {
-      console.error('La fecha y hora del partido son inválidas:', fechaHoraPartido);
+    if (isNaN(fechaHoraPartidoDate.getTime())) {
+      console.error(
+        "La fecha y hora del partido son inválidas:",
+        fechaHoraPartido
+      );
       return false;
     }
 
-    const fechaHoraPartidoDate = new Date(fechaHoraPartido);
     const horaActual = new Date();
     return horaActual > fechaHoraPartidoDate;
-  }
-  
+  };
 
   const indexOfLastPartido = currentPage * partidosPerPage;
   const indexOfFirstPartido = indexOfLastPartido - partidosPerPage;
@@ -218,7 +229,9 @@ const PartidosActivos = () => {
             <Button
               className="btn text-dark"
               onClick={() => handleShowModal(index)}
-              disabled={isHoraMayorQueActual(`${partido.fecha}T${partido.hora}`)}
+              disabled={isHoraMayorQueActual(
+                `${partido.fecha}T${partido.hora}`
+              )}
             >
               Apostar
             </Button>
