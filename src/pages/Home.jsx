@@ -22,7 +22,7 @@ const PartidosActivos = () => {
     const fetchData = async () => {
       try {
         const data = await getApiData(
-          "http://lapachanga-back.v2.test/api/partidos/this-week"
+          "http://harkaitz.informaticamajada.es/api/partidos/this-week"
         );
         // Filtrar solo los partidos del día actual o futuros
         const currentDate = new Date().toISOString().split("T")[0];
@@ -51,13 +51,13 @@ const PartidosActivos = () => {
         }
         try {
           const response1 = await getApiData(
-            `http://lapachanga-back.v2.test/api/equipos/${partido.equipo_id}`
+            `http://harkaitz.informaticamajada.es/api/equipos/${partido.equipo_id}`
           );
           const response2 = await getApiData(
-            `http://lapachanga-back.v2.test/api/equipos/${partido.equipo2_id}`
+            `http://harkaitz.informaticamajada.es/api/equipos/${partido.equipo2_id}`
           );
           const cuotaresponse = await getApiData(
-            `http://lapachanga-back.v2.test/api/partidos/${partido.id}/cuotas`
+            `http://harkaitz.informaticamajada.es/api/partidos/${partido.id}/cuotas`
           );
           // Combinar fecha y hora
           const fechaHora = `${partido.fecha}T${partido.hora}`;
