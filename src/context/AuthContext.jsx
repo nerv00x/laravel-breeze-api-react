@@ -199,7 +199,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       setSessionVerified(false);
-      await axios.post("/logout");
+      await axios.post("https://harkaitz.informaticamajada.es/logout");
       setUser(null);
       window.localStorage.removeItem(SESSION_NAME);
     } catch (e) {
