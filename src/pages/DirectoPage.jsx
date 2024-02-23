@@ -22,7 +22,7 @@ const PartidosActivos = () => {
     const fetchData = async () => {
       try {
         const data = await getApiData(
-          "http://lapachanga-back.test/api/partidos/today"
+          "https://harkaitzreact.informaticamajada.es/api/partidos/today"
         );
         setPartidos(data);
         obtenerNombresEquipos(data);
@@ -48,13 +48,13 @@ const PartidosActivos = () => {
         }
         try {
           const response1 = await getApiData(
-            `http://lapachanga-back.test/api/equipos/${partido.equipo_id}`
+            `https://harkaitzreact.informaticamajada.es/api/equipos/${partido.equipo_id}`
           );
           const response2 = await getApiData(
-            `http://lapachanga-back.test/api/equipos/${partido.equipo2_id}`
+            `https://harkaitzreact.informaticamajada.es/api/equipos/${partido.equipo2_id}`
           );
           const cuotaresponse = await getApiData(
-            `http://lapachanga-back.test/api/partidos/${partido.id}/cuotas`
+            `https://harkaitzreact.informaticamajada.es/api/partidos/${partido.id}/cuotas`
           );
           return {
             nombreEquipo1: response1.nombre,
