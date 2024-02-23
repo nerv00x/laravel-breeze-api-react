@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
     initialSessionVerified
   );
 
-  const csrf = () => axios.get("https://harkaitz.informaticamajada.es/sanctum/csrf-cookie");
+  const csrf = () => axios.get("/sanctum/csrf-cookie");
 
   // Función para realizar una solicitud GET
   const getApiData = async (url) => {
@@ -105,7 +105,7 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       await csrf();
-      await axios.post("https://harkaitz.informaticamajada.es/login", data);
+      await axios.post("/login", data);
       await getUser();
     } catch (e) {
       if (typeof e === "object" && e !== null && "response" in e) {
@@ -123,7 +123,7 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       await csrf();
-      await axios.post("https://harkaitz.informaticamajada.es/register", data);
+      await axios.post("/register", data);
       await getUser();
     } catch (e) {
       if (typeof e === "object" && e !== null && "response" in e) {
@@ -199,7 +199,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       setSessionVerified(false);
-      await axios.post("https://harkaitz.informaticamajada.es/logout");
+      await axios.post("/logout");
       setUser(null);
       window.localStorage.removeItem(SESSION_NAME);
     } catch (e) {
