@@ -89,7 +89,7 @@ export function AuthProvider({ children }) {
   // Función para obtener el usuario
   const getUser = async () => {
     try {
-      const data = await getApiData("/api/user");
+      const data = await getApiData("https://harkaitz.informaticamajada.es/api/user");
       setUser(data);
       setSessionVerified(true);
       window.localStorage.setItem(SESSION_NAME, "true");
