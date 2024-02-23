@@ -22,7 +22,7 @@ const PartidosActivos = () => {
     const fetchData = async () => {
       try {
         const data = await getApiData(
-          "http://lapachanga-back.v2.test/api/partidos/this-week"
+          "http://localhost:8000/api/partidos/this-week"
         );
         // Filtrar solo los partidos del día actual o futuros
         const currentDate = new Date().toISOString().split("T")[0];
@@ -53,13 +53,13 @@ const PartidosActivos = () => {
         }
         try {
           const response1 = await getApiData(
-            `http://lapachanga-back.v2.test/api/equipos/${partido.equipo_id}`
+            `http://localhost:8000/api/equipos/${partido.equipo_id}`
           );
           const response2 = await getApiData(
-            `http://lapachanga-back.v2.test/api/equipos/${partido.equipo2_id}`
+            `http://localhost:8000/api/equipos/${partido.equipo2_id}`
           );
           const cuotaresponse = await getApiData(
-            `http://lapachanga-back.v2.test/api/partidos/${partido.id}/cuotas`
+            `http://localhost:8000/api/partidos/${partido.id}/cuotas`
           );
           // Combinar fecha y hora
           const fechaHora = `${partido.fecha}T${partido.hora}`;
@@ -108,14 +108,14 @@ const PartidosActivos = () => {
       const partidoSeleccionado = partidos[selectedPartidoIndex];
       const cuotaEquipoSeleccionado =
         apuestaData.resultadoEquipoGanador ===
-        nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
+          nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
           ? nombresEquipos[selectedPartidoIndex]?.equipo1Cuota
           : nombresEquipos[selectedPartidoIndex]?.equipo2Cuota;
 
       const user_id = sessionStorage.getItem("userId");
       const equipo_id =
         apuestaData.resultadoEquipoGanador ===
-        nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
+          nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
           ? partidos[selectedPartidoIndex].equipo_id
           : partidos[selectedPartidoIndex].equipo2_id;
 
@@ -198,8 +198,8 @@ const PartidosActivos = () => {
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <h1 className="text-white text-center mb-3">Partidos Activos</h1>
+
+    <div className="flex flex-wrap mt-5 ">
       {successMessage && (
         <div
           className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded absolute top-12 right-10 mt-4 ml-4"
@@ -209,16 +209,14 @@ const PartidosActivos = () => {
           <span className="block sm:inline"> {successMessage}</span>
         </div>
       )}
+      <h1 className="text-black w-full text-center mb-3">Partidos Activos</h1>
+
       {currentPartidos.map((partido, index) => (
-        <Card key={partido.id} className="mb-3 w-75" id="card">
+        <Card key={partido.id} className="bg-amber-400 text-center row col-6 " id="card">
           <Card.Body>
             <Card.Title>
               {nombresEquipos[index]
-                ? nombresEquipos[index].nombreEquipo1
-                : "Loading..."}{" "}
-              vs{" "}
-              {nombresEquipos[index]
-                ? nombresEquipos[index].nombreEquipo2
+                ? `${nombresEquipos[index].nombreEquipo1} vs ${nombresEquipos[index].nombreEquipo2}`
                 : "Loading..."}
             </Card.Title>
             <Card.Text>
@@ -227,33 +225,31 @@ const PartidosActivos = () => {
               Hora: {partido.hora}
             </Card.Text>
             <Button
-              className="btn text-dark"
+              className="btn text-dark bg-emerald-500"
               onClick={() => handleShowModal(index)}
-              disabled={isHoraMayorQueActual(
-                `${partido.fecha}T${partido.hora}`
-              )}
+              disabled={isHoraMayorQueActual(`${partido.fecha}T${partido.hora}`)}
             >
               Apostar
             </Button>
           </Card.Body>
         </Card>
       ))}
-      <div className="pagination flex">
+      <div className="w-full flex justify-center mb-4">
         <Button
           variant="secondary"
           onClick={paginatePrev}
           disabled={currentPage === 1}
+          className="text-black bg-blue-500"
         >
           Anterior
         </Button>
         {pageNumbers.map((pageNumber) => (
           <button
             key={pageNumber}
-            className={`${
-              currentPage === pageNumber
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-gray-700"
-            } py-2 px-4 mx-1 rounded`}
+            className={`${currentPage === pageNumber
+              ? "bg-blue-500 text-black"
+              : "bg-gray-200 text-gray-700"
+              } py-2 px-4 mx-1 rounded`}
             onClick={() => handleClickPage(pageNumber)}
           >
             {pageNumber}
@@ -263,17 +259,18 @@ const PartidosActivos = () => {
           variant="secondary"
           onClick={paginateNext}
           disabled={indexOfLastPartido >= partidos.length}
+          className="text-black bg-blue-500"
         >
           Siguiente
         </Button>
       </div>
       <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
+        <Modal.Header closeButton className="bg-red-500">
           <Modal.Title>Realizar Apuesta</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="bg-gray-500">
           <div>
-            <p>
+            <p className="">
               {nombresEquipos[selectedPartidoIndex]?.nombreEquipo1} - Cuota:{" "}
               {nombresEquipos[selectedPartidoIndex]?.equipo1Cuota}
             </p>
@@ -284,27 +281,24 @@ const PartidosActivos = () => {
           </div>
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formEquipo">
-              <Form.Label>Seleccion equipo</Form.Label>
+              <Form.Label className="">Seleccion equipo</Form.Label>
               <Form.Control
                 as="select"
                 name="resultadoEquipoGanador"
                 onChange={handleChange}
                 value={apuestaData.resultadoEquipoGanador}
+                className="bg-blue-500"
               >
-                <option value="">Seleccione un equipo</option>
+                <option value="" className="bg-blue-500">Seleccione un equipo</option>
                 {selectedPartidoIndex !== null && (
                   <>
-                    <option
-                      value={
-                        nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
-                      }
+                    <option className="bg-blue-500"
+                      value={nombresEquipos[selectedPartidoIndex]?.nombreEquipo1}
                     >
                       {nombresEquipos[selectedPartidoIndex]?.nombreEquipo1}
                     </option>
-                    <option
-                      value={
-                        nombresEquipos[selectedPartidoIndex]?.nombreEquipo2
-                      }
+                    <option className="bg-blue-500"
+                      value={nombresEquipos[selectedPartidoIndex]?.nombreEquipo2}
                     >
                       {nombresEquipos[selectedPartidoIndex]?.nombreEquipo2}
                     </option>
@@ -320,14 +314,16 @@ const PartidosActivos = () => {
                 name="montoApostado"
                 onChange={handleChange}
                 value={apuestaData.montoApostado}
+                className="bg-blue-500"
               />
             </Form.Group>
-            <Button variant="primary" type="submit">
+            <Button variant="primary" type="submit" className="bg-emerald-500">
               Realizar Apuesta
             </Button>
           </Form>
         </Modal.Body>
       </Modal>
+
     </div>
   );
 };

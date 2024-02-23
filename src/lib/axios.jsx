@@ -1,8 +1,13 @@
 import axios from 'axios';
 const instance = axios.create({
-    baseURL: import.meta.env.VITE_BACKEND_URL,
+    baseURL:"https://laravel-breeze-api-react-1.onrender.com",
     withXSRFToken: true,
     withCredentials: true,
+    xsrfCookieName:'XSRF-TOKEN',
+    xsrfHeaderName:'X-XSRF-TOKEN',
+    headers:{
+        Accept:'aplication/json',
+    }
 });
 // Add a response interceptor
 instance.interceptors.response.use((response) => {
