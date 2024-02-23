@@ -89,7 +89,7 @@ export function AuthProvider({ children }) {
   // Función para obtener el usuario
   const getUser = async () => {
     try {
-      const data = await getApiData("/api/user");
+      const data = await getApiData("https://harkaitz.informaticamajada.es/api/user");
       setUser(data);
       setSessionVerified(true);
       window.localStorage.setItem(SESSION_NAME, "true");
@@ -105,7 +105,7 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       await csrf();
-      await axios.post("/login", data);
+      await axios.Post("https://harkaitz.informaticamajada.es/login", data);
       await getUser();
     } catch (e) {
       if (typeof e === "object" && e !== null && "response" in e) {
@@ -123,7 +123,7 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       await csrf();
-      await axios.post("/register", data);
+      await axios.post("https://harkaitz.informaticamajada.es/register", data);
       await getUser();
     } catch (e) {
       if (typeof e === "object" && e !== null && "response" in e) {
