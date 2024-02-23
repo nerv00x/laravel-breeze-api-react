@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
     initialSessionVerified
   );
 
-  const csrf = () => axios.get("/sanctum/csrf-cookie");
+  const csrf = () => axios.get("https//:harkaitz.informaticamajada.es/sanctum/csrf-cookie");
 
   // Función para realizar una solicitud GET
   const getApiData = async (url) => {
