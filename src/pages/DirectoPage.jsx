@@ -22,7 +22,7 @@ const PartidosActivos = () => {
     const fetchData = async () => {
       try {
         const data = await getApiData(
-          "http://lapachanga-back.v2.test/api/partidos/today"
+          "http://lapachanga-back.test/api/partidos/today"
         );
         setPartidos(data);
         obtenerNombresEquipos(data);
@@ -32,7 +32,7 @@ const PartidosActivos = () => {
     };
 
     fetchData();
-  }, []); 
+  }, []);
 
   const obtenerNombresEquipos = async (partidosData) => {
     const nombresEquiposData = await Promise.all(
@@ -48,13 +48,13 @@ const PartidosActivos = () => {
         }
         try {
           const response1 = await getApiData(
-            `http://lapachanga-back.v2.test/api/equipos/${partido.equipo_id}`
+            `http://lapachanga-back.test/api/equipos/${partido.equipo_id}`
           );
           const response2 = await getApiData(
-            `http://lapachanga-back.v2.test/api/equipos/${partido.equipo2_id}`
+            `http://lapachanga-back.test/api/equipos/${partido.equipo2_id}`
           );
           const cuotaresponse = await getApiData(
-            `http://lapachanga-back.v2.test/api/partidos/${partido.id}/cuotas`
+            `http://lapachanga-back.test/api/partidos/${partido.id}/cuotas`
           );
           return {
             nombreEquipo1: response1.nombre,
@@ -100,14 +100,14 @@ const PartidosActivos = () => {
       const partidoSeleccionado = partidos[selectedPartidoIndex];
       const cuotaEquipoSeleccionado =
         apuestaData.resultadoEquipoGanador ===
-        nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
+          nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
           ? nombresEquipos[selectedPartidoIndex]?.equipo1Cuota
           : nombresEquipos[selectedPartidoIndex]?.equipo2Cuota;
 
       const user_id = sessionStorage.getItem("userId");
       const equipo_id =
         apuestaData.resultadoEquipoGanador ===
-        nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
+          nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
           ? partidos[selectedPartidoIndex].equipo_id
           : partidos[selectedPartidoIndex].equipo2_id;
 
@@ -173,7 +173,7 @@ const PartidosActivos = () => {
 
   return (
     <div>
-      <h1 className="text-white text-center mb-3">Partidos Activos</h1>
+      <h1 className="text-black w-full text-center mb-3">Partidos Activos</h1>
       {successMessage && (
         <div
           className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded absolute top-12 right-10 mt-4 ml-4"
@@ -184,7 +184,7 @@ const PartidosActivos = () => {
         </div>
       )}
       {currentPartidos.map((partido, index) => (
-        <Card key={partido.id} className="mb-3" id="card">
+        <Card key={partido.id} className="bg-amber-400 text-center row col-6" id="card">
           <Card.Body>
             <Card.Title>
               {nombresEquipos[index]
@@ -222,11 +222,10 @@ const PartidosActivos = () => {
         {pageNumbers.map((pageNumber) => (
           <button
             key={pageNumber}
-            className={`${
-              currentPage === pageNumber
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-gray-700"
-            } py-2 px-4 mx-1 rounded`}
+            className={`${currentPage === pageNumber
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200 text-gray-700"
+              } py-2 px-4 mx-1 rounded`}
             onClick={() => handleClickPage(pageNumber)}
           >
             {pageNumber}
@@ -241,12 +240,12 @@ const PartidosActivos = () => {
         </Button>
       </div>
       <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
+        <Modal.Header closeButton className="bg-red-500">
           <Modal.Title>Realizar Apuesta</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="bg-gray-500">
           <div>
-            <p>
+            <p className="">
               {nombresEquipos[selectedPartidoIndex]?.nombreEquipo1} - Cuota:{" "}
               {nombresEquipos[selectedPartidoIndex]?.equipo1Cuota}
             </p>
@@ -257,27 +256,24 @@ const PartidosActivos = () => {
           </div>
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formEquipo">
-              <Form.Label>Seleccion equipo</Form.Label>
+              <Form.Label className="">Seleccion equipo</Form.Label>
               <Form.Control
                 as="select"
                 name="resultadoEquipoGanador"
                 onChange={handleChange}
                 value={apuestaData.resultadoEquipoGanador}
+                className="bg-blue-500"
               >
-                <option value="">Seleccione un equipo</option>
+                <option value="" className="bg-blue-500">Seleccione un equipo</option>
                 {selectedPartidoIndex !== null && (
                   <>
-                    <option
-                      value={
-                        nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
-                      }
+                    <option className="bg-blue-500"
+                      value={nombresEquipos[selectedPartidoIndex]?.nombreEquipo1}
                     >
                       {nombresEquipos[selectedPartidoIndex]?.nombreEquipo1}
                     </option>
-                    <option
-                      value={
-                        nombresEquipos[selectedPartidoIndex]?.nombreEquipo2
-                      }
+                    <option className="bg-blue-500"
+                      value={nombresEquipos[selectedPartidoIndex]?.nombreEquipo2}
                     >
                       {nombresEquipos[selectedPartidoIndex]?.nombreEquipo2}
                     </option>
@@ -293,9 +289,10 @@ const PartidosActivos = () => {
                 name="montoApostado"
                 onChange={handleChange}
                 value={apuestaData.montoApostado}
+                className="bg-blue-500"
               />
             </Form.Group>
-            <Button variant="primary" type="submit">
+            <Button variant="primary" type="submit" className="bg-emerald-500">
               Realizar Apuesta
             </Button>
           </Form>
