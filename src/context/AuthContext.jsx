@@ -105,7 +105,7 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       await csrf();
-      await axios.post("/login", data);
+      await axios.post("https://harkaitzreact.informaticamajada.es/login", data);
       await getUser();
     } catch (e) {
       if (typeof e === "object" && e !== null && "response" in e) {
@@ -123,7 +123,7 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       await csrf();
-      await axios.post("/register", data);
+      await axios.post("https://harkaitzreact.informaticamajada.es/register", data);
       await getUser();
     } catch (e) {
       if (typeof e === "object" && e !== null && "response" in e) {
