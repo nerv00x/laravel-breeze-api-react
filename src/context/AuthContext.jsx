@@ -67,7 +67,7 @@ export function AuthProvider({ children }) {
   const postApuestas = async (apuestaData) => {
     try {
       await csrf(); // Asegúrate de tener definida la función csrf
-      const response = await postApiData("/api/apuestas", apuestaData);
+      const response = await postApiData("https://harkaitz.informaticamajada.es/api/apuestas", apuestaData);
       return response;
     } catch (error) {
       console.error("Error creating apuesta:", error);
@@ -78,7 +78,7 @@ export function AuthProvider({ children }) {
   const postPartido = async (partidoData) => {
     try {
       await csrf(); // Asegúrate de tener definida la función csrf
-      const response = await postApiData("/api/partidos", partidoData);
+      const response = await postApiData("https://harkaitz.informaticamajada.es/api/partidos", partidoData);
       return response;
     } catch (error) {
       console.error("Error creating apuesta:", error);
@@ -89,7 +89,7 @@ export function AuthProvider({ children }) {
   // Función para obtener el usuario
   const getUser = async () => {
     try {
-      const data = await getApiData("/api/user");
+      const data = await getApiData("https://harkaitz.informaticamajada.es/api/user");
       setUser(data);
       setSessionVerified(true);
       window.localStorage.setItem(SESSION_NAME, "true");
@@ -142,7 +142,7 @@ export function AuthProvider({ children }) {
     setStatus(null);
     try {
       await csrf();
-      const response = await axios.post("/forgot-password", data);
+      const response = await axios.post("https://harkaitz.informaticamajada.es/forgot-password", data);
       setStatus(response.data?.status);
     } catch (e) {
       if (typeof e === "object" && e !== null && "response" in e) {
@@ -161,7 +161,7 @@ export function AuthProvider({ children }) {
     setStatus(null);
     try {
       await csrf();
-      const response = await axios.post("/reset-password", data);
+      const response = await axios.post("https://harkaitz.informaticamajada.es/reset-password", data);
       setStatus(response.data?.status);
       setTimeout(() => {
         navigate("/login");
@@ -183,7 +183,7 @@ export function AuthProvider({ children }) {
     setStatus(null);
     try {
       await csrf();
-      const response = await axios.post("/email/verification-notification");
+      const response = await axios.post("https://harkaitz.informaticamajada.es/email/verification-notification");
       setStatus(response.data?.status);
     } catch (e) {
       if (typeof e === "object" && e !== null && "response" in e) {
