@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from "react";
 import { Card, Button, Modal, Form } from "react-bootstrap";
@@ -17,6 +18,8 @@ const PartidosActivos = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [partidosPerPage] = useState(4);
   const [successMessage, setSuccessMessage] = useState("");
+  const [supercuota, setSupercuota] = useState(null);
+  const [supercuotaIndex, setSupercuotaIndex] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,6 +40,20 @@ const PartidosActivos = () => {
     };
 
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchSupercuota = async () => {
+      try {
+        const supercuotaData = await getApiData("http://localhost:8000/api/super-cuota");
+        setSupercuota(supercuotaData);
+        // Puedes obtener supercuotaIndex aquí
+      } catch (error) {
+        console.error("Error fetching supercuota:", error);
+      }
+    };
+
+    fetchSupercuota();
   }, []);
 
   const obtenerNombresEquipos = async (partidosData) => {
@@ -198,7 +215,6 @@ const PartidosActivos = () => {
   };
 
   return (
-
     <div className="flex flex-wrap mt-5 ">
       {successMessage && (
         <div
@@ -234,6 +250,30 @@ const PartidosActivos = () => {
           </Card.Body>
         </Card>
       ))}
+
+      {/* Botón para la supercuota */}
+      {supercuota && (
+        <Card className="bg-amber-400 text-center row col-6 " id="card">
+          <Card.Body>
+            <Card.Title>
+              {`${supercuota.nombreEquipo1} vs ${supercuota.nombreEquipo2}`}
+            </Card.Title>
+            <Card.Text>
+              Fecha: {supercuota.fecha}
+              <br />
+              Hora: {supercuota.hora}
+            </Card.Text>
+            <Button
+              className="btn text-dark bg-emerald-500"
+              onClick={() => handleShowModal(supercuotaIndex)}
+              disabled={isHoraMayorQueActual(`${supercuota.fecha}T${supercuota.hora}`)}
+            >
+              Apostar
+            </Button>
+          </Card.Body>
+        </Card>
+      )}
+
       <div className="w-full flex justify-center mb-4">
         <Button
           variant="secondary"

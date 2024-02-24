@@ -1,6 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from "react";
 import { Card, Button, Modal, Form } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import CrearPartido from "../components/CrearPartido";
 import "../App.css";
@@ -16,67 +16,68 @@ const PartidosActivos = () => {
      const [currentPage, setCurrentPage] = useState(1);
      const [partidosPerPage] = useState(4);
      const [showCrearPartido, setShowCrearPartido] = useState(false);
+     const history = useHistory();
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const data = await getApiData(
-                    "http://lapachanga-back.v2.test/api/partidos/this-week"
-                );
-                // Filtrar solo los partidos del día actual o futuros
-                const currentDate = new Date().toISOString().split("T")[0];
-                const filteredPartidos = data.filter(
-                    (partido) => partido.fecha >= currentDate
-                );
-                setPartidos(filteredPartidos);
-                obtenerNombresEquipos(filteredPartidos);
-            } catch (error) {
-                console.error("Error fetching partidos:", error);
-            }
-        };
+     useEffect(() => {
+          const fetchData = async () => {
+               try {
+                    const data = await getApiData(
+                         "http://lapachanga-back.v2.test/api/partidos/this-week"
+                    );
+                    // Filtrar solo los partidos del día actual o futuros
+                    const currentDate = new Date().toISOString().split("T")[0];
+                    const filteredPartidos = data.filter(
+                         (partido) => partido.fecha >= currentDate
+                    );
+                    setPartidos(filteredPartidos);
+                    obtenerNombresEquipos(filteredPartidos);
+               } catch (error) {
+                    console.error("Error fetching partidos:", error);
+               }
+          };
 
           fetchData();
      }, []);
 
-    const obtenerNombresEquipos = async (partidosData) => {
-        const nombresEquiposData = await Promise.all(
-            partidosData.map(async (partido) => {
-                if (!partido) {
-                    return {
-                        nombreEquipo1: "Nombre no disponible",
-                        nombreEquipo2: "Nombre no disponible",
-                        equipo1Cuota: "Cuota no disponible",
-                        equipo2Cuota: "Cuota no disponible",
-                        fechaHora: "Fecha y hora no disponibles",
-                    };
-                }
-                try {
-                    const response1 = await getApiData(
-                        `http://lapachanga-back.v2.test/api/equipos/${partido.equipo_id}`
-                    );
-                    const response2 = await getApiData(
-                        `http://lapachanga-back.v2.test/api/equipos/${partido.equipo2_id}`
-                    );
-                    const fechaHora = `${partido.fecha}T${partido.hora}`;
-                    return {
-                        nombreEquipo1: response1.nombre,
-                        nombreEquipo2: response2.nombre,
-                        fechaHora: fechaHora,
-                    };
-                } catch (error) {
-                    console.error("Error obteniendo nombres de equipos:", error);
-                    return {
-                        nombreEquipo1: "Nombre no disponible",
-                        nombreEquipo2: "Nombre no disponible",
-                        equipo1Cuota: "Cuota no disponible",
-                        equipo2Cuota: "Cuota no disponible",
-                        fechaHora: "Fecha y hora no disponibles",
-                    };
-                }
-            })
-        );
-        setNombresEquipos(nombresEquiposData);
-    };
+     const obtenerNombresEquipos = async (partidosData) => {
+          const nombresEquiposData = await Promise.all(
+               partidosData.map(async (partido) => {
+                    if (!partido) {
+                         return {
+                              nombreEquipo1: "Nombre no disponible",
+                              nombreEquipo2: "Nombre no disponible",
+                              equipo1Cuota: "Cuota no disponible",
+                              equipo2Cuota: "Cuota no disponible",
+                              fechaHora: "Fecha y hora no disponibles",
+                         };
+                    }
+                    try {
+                         const response1 = await getApiData(
+                              `http://lapachanga-back.v2.test/api/equipos/${partido.equipo_id}`
+                         );
+                         const response2 = await getApiData(
+                              `http://lapachanga-back.v2.test/api/equipos/${partido.equipo2_id}`
+                         );
+                         const fechaHora = `${partido.fecha}T${partido.hora}`;
+                         return {
+                              nombreEquipo1: response1.nombre,
+                              nombreEquipo2: response2.nombre,
+                              fechaHora: fechaHora,
+                         };
+                    } catch (error) {
+                         console.error("Error obteniendo nombres de equipos:", error);
+                         return {
+                              nombreEquipo1: "Nombre no disponible",
+                              nombreEquipo2: "Nombre no disponible",
+                              equipo1Cuota: "Cuota no disponible",
+                              equipo2Cuota: "Cuota no disponible",
+                              fechaHora: "Fecha y hora no disponibles",
+                         };
+                    }
+               })
+          );
+          setNombresEquipos(nombresEquiposData);
+     };
 
      const handleShowModal = (index) => {
           setSelectedPartidoIndex(index);
@@ -95,7 +96,7 @@ const PartidosActivos = () => {
                console.error("Índice de partido no válido:", index);
                return;
           }
-     
+
           const partidoId = partidos[index].id.toString();
           e.preventDefault();
           try {
@@ -113,7 +114,6 @@ const PartidosActivos = () => {
                console.error("Error al editar el partido:", error);
           }
      };
-     
 
      const handleEliminarPartido = async (index) => {
           const partidoId = partidos[index].id;
@@ -127,6 +127,9 @@ const PartidosActivos = () => {
           }
      };
 
+     const handleClickSupercuota = () => {
+          history.push("/supercuota");
+     };
 
      const indexOfLastPartido = currentPage * partidosPerPage;
      const indexOfFirstPartido = indexOfLastPartido - partidosPerPage;
@@ -221,8 +224,8 @@ const PartidosActivos = () => {
                               <button
                                    key={pageNumber}
                                    className={`${currentPage === pageNumber
-                                        ? "bg-blue-500 text-white"
-                                        : "bg-gray-200 text-gray-700"
+                                             ? "bg-blue-500 text-white"
+                                             : "bg-gray-200 text-gray-700"
                                         } py-2 px-4 mx-1 rounded`}
                                    onClick={() => handleClickPage(pageNumber)}
                               >
@@ -237,107 +240,15 @@ const PartidosActivos = () => {
                               Siguiente
                          </Button>
                     </div>
-                    <Button variant="primary" onClick={handleCrearPartido}>
-                         Crear Partido
-                    </Button>
+                    <div>
+                         <Button variant="primary" onClick={handleCrearPartido}>
+                              Crear Partido
+                         </Button>
+                         <Button variant="primary" onClick={handleClickSupercuota}>
+                              SuperCuota
+                         </Button>
+                    </div>
                </div>
-               <Modal show={showModal} onHide={handleCloseModal}>
-                    <Modal.Header closeButton>
-                         <Modal.Title>Editar Partido</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                         <Form onSubmit={(e) => handleEditarSubmit(e, selectedPartidoIndex)}>
-                              <Form.Group controlId="formFecha">
-                                   <Form.Label>Fecha</Form.Label>
-                                   <Form.Control
-                                        type="date"
-                                        name="fecha"
-                                        value={editingPartido ? editingPartido.fecha : ""}
-                                        onChange={(e) =>
-                                             setEditingPartido({
-                                                  ...editingPartido,
-                                                  fecha: e.target.value,
-                                             })
-                                        }
-                                   />
-                              </Form.Group>
-                              <Form.Group controlId="formHora">
-                                   <Form.Label>Hora</Form.Label>
-                                   <Form.Control
-                                        type="time"
-                                        name="hora"
-                                        value={editingPartido ? editingPartido.hora : ""}
-                                        onChange={(e) =>
-                                             setEditingPartido({
-                                                  ...editingPartido,
-                                                  hora: e.target.value,
-                                             })
-                                        }
-                                   />
-                              </Form.Group>
-                              <Form.Group controlId="formEquipo1">
-                                   <Form.Label>Equipo 1</Form.Label>
-                                   <Form.Control
-                                        type="text"
-                                        name="equipo_id"
-                                        value={editingPartido ? editingPartido.equipo_id : ""}
-                                        onChange={(e) =>
-                                             setEditingPartido({
-                                                  ...editingPartido,
-                                                  equipo_id: e.target.value,
-                                             })
-                                        }
-                                   />
-                              </Form.Group>
-                              <Form.Group controlId="formEquipo2">
-                                   <Form.Label>Equipo 2</Form.Label>
-                                   <Form.Control
-                                        type="text"
-                                        name="equipo2_id"
-                                        value={editingPartido ? editingPartido.equipo2_id : ""}
-                                        onChange={(e) =>
-                                             setEditingPartido({
-                                                  ...editingPartido,
-                                                  equipo2_id: e.target.value,
-                                             })
-                                        }
-                                   />
-                              </Form.Group>
-
-                              <Form.Group controlId="formGanador">
-                                   <Form.Label>Ganador</Form.Label>
-                                   <Form.Control
-                                        type="text"
-                                        name="ganador"
-                                        value={editingPartido ? editingPartido.ganador : ""}
-                                        onChange={(e) =>
-                                             setEditingPartido({
-                                                  ...editingPartido,
-                                                  ganador: e.target.value,
-                                             })
-                                        }
-                                   />
-                              </Form.Group>
-                              <Form.Group controlId="formResultado">
-                                   <Form.Label>Resultado</Form.Label>
-                                   <Form.Control
-                                        type="text"
-                                        name="resultado"
-                                        value={editingPartido ? editingPartido.resultado : ""}
-                                        onChange={(e) =>
-                                             setEditingPartido({
-                                                  ...editingPartido,
-                                                  resultado: e.target.value,
-                                             })
-                                        }
-                                   />
-                              </Form.Group>
-                              <Button variant="primary" type="submit">
-                                   Guardar Cambios
-                              </Button>
-                         </Form>
-                    </Modal.Body>
-               </Modal>
                {showCrearPartido && (
                     <CrearPartido
                          show={showCrearPartido}

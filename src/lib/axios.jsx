@@ -1,20 +1,26 @@
 import axios from 'axios';
+
 const instance = axios.create({
-    baseURL:"https://laravel-breeze-api-react-1.onrender.com",
+    baseURL: "http://lapachanga-back.v2.test", // Asegúrate de incluir el protocolo 'http://' o 'https://'
     withXSRFToken: true,
     withCredentials: true,
-    xsrfCookieName:'XSRF-TOKEN',
-    xsrfHeaderName:'X-XSRF-TOKEN',
-    headers:{
-        Accept:'aplication/json',
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    headers: {
+        Accept: 'application/json', // Corrige el typo 'aplication' a 'application'
     }
 });
-// Add a response interceptor
-instance.interceptors.response.use((response) => {
-    // If the request was successful, return the response
-    return response;
-}, (error) => {
-    // If there's an error in the response, handle it here
-    throw error;
-});
+
+// Agrega un interceptor de respuesta
+instance.interceptors.response.use(
+    (response) => {
+        // Si la solicitud fue exitosa, devuelve la respuesta
+        return response;
+    },
+    (error) => {
+        // Si hay un error en la respuesta, manejarlo aquí
+        throw error;
+    }
+);
+
 export default instance;
