@@ -1,6 +1,6 @@
 import axios from 'axios';
 const instance = axios.create({
-    baseURL:"https://laravel-breeze-api-react-1.onrender.com",
+    baseURL:import.meta.env.REACT_APP_BACKEND_URL,
     withXSRFToken: true,
     withCredentials: true,
     xsrfCookieName:'XSRF-TOKEN',
