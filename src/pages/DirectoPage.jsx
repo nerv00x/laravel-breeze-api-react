@@ -22,7 +22,7 @@ const PartidosActivos = () => {
     const fetchData = async () => {
       try {
         const data = await getApiData(
-          "https://harkaitz.informaticamajada.es/api/partidos/today"
+          "http://localhost:8000/api/partidos/today"
         );
         setPartidos(data);
         obtenerNombresEquipos(data);
@@ -48,13 +48,13 @@ const PartidosActivos = () => {
         }
         try {
           const response1 = await getApiData(
-            `https://harkaitz.informaticamajada.es/api/equipos/${partido.equipo_id}`
+            `http://localhost:8000/api/equipos/${partido.equipo_id}`
           );
           const response2 = await getApiData(
-            `https://harkaitz.informaticamajada.es/api/equipos/${partido.equipo2_id}`
+            `http://localhost:8000/api/equipos/${partido.equipo2_id}`
           );
           const cuotaresponse = await getApiData(
-            `https://harkaitz.informaticamajada.es/api/partidos/${partido.id}/cuotas`
+            `http://localhost:8000/api/partidos/${partido.id}/cuotas`
           );
           return {
             nombreEquipo1: response1.nombre,
@@ -101,8 +101,8 @@ const PartidosActivos = () => {
       const cuotaEquipoSeleccionado =
         apuestaData.resultadoEquipoGanador ===
           nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
-          ? nombresEquipos[selectedPartidoIndex]?.equipo1Cuota
-          : nombresEquipos[selectedPartidoIndex]?.equipo2Cuota;
+          ? parseFloat(nombresEquipos[selectedPartidoIndex]?.equipo1Cuota) // Convertir a número
+          : parseFloat(nombresEquipos[selectedPartidoIndex]?.equipo2Cuota); // Convertir a número
 
       const user_id = sessionStorage.getItem("userId");
       const equipo_id =
@@ -139,6 +139,11 @@ const PartidosActivos = () => {
       handleCloseModal();
     }
   };
+
+
+
+
+
 
   const isHoraMayorQueActual = (horaPartido) => {
     const horaPartidoDate = new Date(`${horaPartido}`);

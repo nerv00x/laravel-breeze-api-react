@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from "react";
 import { Card, Button, Modal, Form } from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
+import SuperCuota from "../components/SuperCuota"; // Importa el nuevo componente
+import Sidebar from "../components/sidebar"; 
 import "../App.css";
 
 const PartidosActivos = () => {
@@ -14,15 +17,16 @@ const PartidosActivos = () => {
     montoApostado: 10,
     resultadoEquipoGanador: "",
   });
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);  
   const [partidosPerPage] = useState(4);
   const [successMessage, setSuccessMessage] = useState("");
+  const [superCuota, setSuperCuota] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getApiData(
-          "http://localhost:8000/api/partidos/this-week"
+          "http://localhost:8000/api/partidos/today"
         );
         // Filtrar solo los partidos del día actual o futuros
         const currentDate = new Date().toISOString().split("T")[0];
@@ -38,6 +42,8 @@ const PartidosActivos = () => {
 
     fetchData();
   }, []);
+
+
 
   const obtenerNombresEquipos = async (partidosData) => {
     const nombresEquiposData = await Promise.all(
@@ -63,7 +69,6 @@ const PartidosActivos = () => {
           );
           // Combinar fecha y hora
           const fechaHora = `${partido.fecha}T${partido.hora}`;
-          console.log(fechaHora);
           return {
             nombreEquipo1: response1.nombre,
             nombreEquipo2: response2.nombre,
@@ -130,7 +135,6 @@ const PartidosActivos = () => {
         sala_id: 1,
         partido_id: partidoSeleccionado.id,
       };
-      console.log(nuevaApuesta);
       const response = await postApuestas(nuevaApuesta);
       setSuccessMessage("Apuesta creada con éxito");
       setTimeout(() => setSuccessMessage(""), 3000);
@@ -149,25 +153,10 @@ const PartidosActivos = () => {
   };
 
   const isHoraMayorQueActual = (fechaHoraPartido) => {
-    console.log(fechaHoraPartido);
-
-    // Dividir la cadena de fecha y hora en sus componentes
     const [fecha, hora] = fechaHoraPartido.split("T");
     const [año, mes, dia] = fecha.split("-");
     const [horaPartido] = hora.split(":");
-
-    // Crear un objeto Date con los componentes separados
     const fechaHoraPartidoDate = new Date(año, mes - 1, dia, horaPartido);
-
-    // Verificar si la fecha y hora del partido son válidas
-    if (isNaN(fechaHoraPartidoDate.getTime())) {
-      console.error(
-        "La fecha y hora del partido son inválidas:",
-        fechaHoraPartido
-      );
-      return false;
-    }
-
     const horaActual = new Date();
     return horaActual > fechaHoraPartidoDate;
   };
@@ -196,10 +185,15 @@ const PartidosActivos = () => {
   const paginatePrev = () => {
     setCurrentPage(currentPage - 1);
   };
-
   return (
-
-    <div className="flex flex-wrap mt-5 ">
+    
+    <div className="flex flex-wrap mt-5">
+            <div className="flex">
+      <Sidebar />
+      <div className="flex-1">
+        {/* Aquí va el contenido principal de tu aplicación */}
+      </div>
+    </div>
       {successMessage && (
         <div
           className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded absolute top-12 right-10 mt-4 ml-4"
@@ -209,60 +203,84 @@ const PartidosActivos = () => {
           <span className="block sm:inline"> {successMessage}</span>
         </div>
       )}
-      <h1 className="text-black w-full text-center mb-3">Partidos Activos</h1>
+      <h1 className="text-black w-full text-center mb-4"></h1>
 
-      {currentPartidos.map((partido, index) => (
-        <Card key={partido.id} className="bg-amber-400 text-center row col-6 " id="card">
-          <Card.Body>
-            <Card.Title>
-              {nombresEquipos[index]
-                ? `${nombresEquipos[index].nombreEquipo1} vs ${nombresEquipos[index].nombreEquipo2}`
-                : "Loading..."}
-            </Card.Title>
-            <Card.Text>
-              Fecha: {partido.fecha}
-              <br />
-              Hora: {partido.hora}
-            </Card.Text>
-            <Button
-              className="btn text-dark bg-emerald-500"
-              onClick={() => handleShowModal(index)}
-              disabled={isHoraMayorQueActual(`${partido.fecha}T${partido.hora}`)}
-            >
-              Apostar
-            </Button>
-          </Card.Body>
-        </Card>
-      ))}
-      <div className="w-full flex justify-center mb-4">
-        <Button
-          variant="secondary"
-          onClick={paginatePrev}
-          disabled={currentPage === 1}
-          className="text-black bg-blue-500"
-        >
-          Anterior
-        </Button>
-        {pageNumbers.map((pageNumber) => (
-          <button
-            key={pageNumber}
-            className={`${currentPage === pageNumber
-              ? "bg-blue-500 text-black"
-              : "bg-gray-200 text-gray-700"
-              } py-2 px-4 mx-1 rounded`}
-            onClick={() => handleClickPage(pageNumber)}
-          >
-            {pageNumber}
-          </button>
+      <div className="w-full md:w-3/4 flex flex-col items-center pl-40 ">
+        {/* Aquí van los partidos */}
+        {currentPartidos.map((partido, index) => (
+          <Card key={partido.id} className="bg-amber-400 text-center row col-6" id="card">
+            <Card.Body>
+              <Card.Title>
+                {nombresEquipos[index]
+                  ? `${nombresEquipos[index].nombreEquipo1} vs ${nombresEquipos[index].nombreEquipo2}`
+                  : "Loading..."}
+              </Card.Title>
+              <Card.Text>
+                Fecha: {partido.fecha}
+                <br />
+                Hora: {partido.hora}
+                <br />
+                {index === currentPartidos.length - 1 && superCuota && (
+                  <>
+                    <strong>Supercuota del día:</strong>
+                    <br />
+                    Nombre: {superCuota.nombre}
+                    <br />
+                    Equipo ID: {superCuota.equipo_id}
+                    <br />
+                    Cuota ID: {superCuota.cuota_id}
+                    <br />
+                    Partido ID: {superCuota.partido_id}
+                  </>
+                )}
+              </Card.Text>
+              <Button
+                className="btn text-dark bg-emerald-500"
+                onClick={() => handleShowModal(index)}
+                disabled={isHoraMayorQueActual(`${partido.fecha}T${partido.hora}`)}
+              >
+                Apostar
+              </Button>
+            </Card.Body>
+          </Card>
         ))}
-        <Button
-          variant="secondary"
-          onClick={paginateNext}
-          disabled={indexOfLastPartido >= partidos.length}
-          className="text-black bg-blue-500"
-        >
-          Siguiente
-        </Button>
+        {/* Botones de paginación */}
+        <div className="w-full flex justify-center mb-4">
+          <Button
+            variant="secondary"
+            onClick={paginatePrev}
+            disabled={currentPage === 1}
+            className="text-black bg-blue-500"
+          >
+            Anterior
+          </Button>
+          {pageNumbers.map((pageNumber) => (
+            <button
+              key={pageNumber}
+              className={`${currentPage === pageNumber
+                ? "bg-blue-500 text-black"
+                : "bg-gray-200 text-gray-700"
+                } py-2 px-4 mx-1 rounded`}
+              onClick={() => handleClickPage(pageNumber)}
+            >
+              {pageNumber}
+            </button>
+          ))}
+          <Button
+            variant="secondary"
+            onClick={paginateNext}
+            disabled={indexOfLastPartido >= partidos.length}
+            className="text-black bg-blue-500"
+          >
+            Siguiente
+          </Button>
+        </div>
+      </div>
+
+      <div className="w-full md:w-1/4 pl-4 flex flex-col items-center">
+        <SuperCuota />
+      </div>
+      <div className="w-full flex justify-center mb-4">
       </div>
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton className="bg-red-500">
@@ -279,53 +297,12 @@ const PartidosActivos = () => {
               {nombresEquipos[selectedPartidoIndex]?.equipo2Cuota}
             </p>
           </div>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="formEquipo">
-              <Form.Label className="">Seleccion equipo</Form.Label>
-              <Form.Control
-                as="select"
-                name="resultadoEquipoGanador"
-                onChange={handleChange}
-                value={apuestaData.resultadoEquipoGanador}
-                className="bg-blue-500"
-              >
-                <option value="" className="bg-blue-500">Seleccione un equipo</option>
-                {selectedPartidoIndex !== null && (
-                  <>
-                    <option className="bg-blue-500"
-                      value={nombresEquipos[selectedPartidoIndex]?.nombreEquipo1}
-                    >
-                      {nombresEquipos[selectedPartidoIndex]?.nombreEquipo1}
-                    </option>
-                    <option className="bg-blue-500"
-                      value={nombresEquipos[selectedPartidoIndex]?.nombreEquipo2}
-                    >
-                      {nombresEquipos[selectedPartidoIndex]?.nombreEquipo2}
-                    </option>
-                  </>
-                )}
-              </Form.Control>
-            </Form.Group>
-
-            <Form.Group controlId="formMonto">
-              <Form.Label>Monto Apostado</Form.Label>
-              <Form.Control
-                type="number"
-                name="montoApostado"
-                onChange={handleChange}
-                value={apuestaData.montoApostado}
-                className="bg-blue-500"
-              />
-            </Form.Group>
-            <Button variant="primary" type="submit" className="bg-emerald-500">
-              Realizar Apuesta
-            </Button>
-          </Form>
         </Modal.Body>
       </Modal>
-
     </div>
   );
+
+
 };
 
 export default PartidosActivos;

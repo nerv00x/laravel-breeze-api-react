@@ -96,6 +96,7 @@ export function AuthProvider({ children }) {
       // Guardar el ID del usuario en sessionStorage
       sessionStorage.setItem("userId", data.id);
       sessionStorage.setItem("TipoUsuario", data.rol);
+      sessionStorage.setItem("Saldo", data.saldo);
     } catch (error) {
       console.error("Error getting user:", error);
     }
@@ -199,7 +200,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       setSessionVerified(false);
-      await axios.post("/logout");
+      await axios.post("http://localhost:8000/logout");
       setUser(null);
       window.localStorage.removeItem(SESSION_NAME);
     } catch (e) {

@@ -17,66 +17,66 @@ const PartidosActivos = () => {
      const [partidosPerPage] = useState(4);
      const [showCrearPartido, setShowCrearPartido] = useState(false);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const data = await getApiData(
-                    "http://lapachanga-back.v2.test/api/partidos/this-week"
-                );
-                // Filtrar solo los partidos del día actual o futuros
-                const currentDate = new Date().toISOString().split("T")[0];
-                const filteredPartidos = data.filter(
-                    (partido) => partido.fecha >= currentDate
-                );
-                setPartidos(filteredPartidos);
-                obtenerNombresEquipos(filteredPartidos);
-            } catch (error) {
-                console.error("Error fetching partidos:", error);
-            }
-        };
+     useEffect(() => {
+          const fetchData = async () => {
+               try {
+                    const data = await getApiData(
+                         "http://localhost:8000/api/partidos/this-week"
+                    );
+                    // Filtrar solo los partidos del día actual o futuros
+                    const currentDate = new Date().toISOString().split("T")[0];
+                    const filteredPartidos = data.filter(
+                         (partido) => partido.fecha >= currentDate
+                    );
+                    setPartidos(filteredPartidos);
+                    obtenerNombresEquipos(filteredPartidos);
+               } catch (error) {
+                    console.error("Error fetching partidos:", error);
+               }
+          };
 
           fetchData();
      }, []);
 
-    const obtenerNombresEquipos = async (partidosData) => {
-        const nombresEquiposData = await Promise.all(
-            partidosData.map(async (partido) => {
-                if (!partido) {
-                    return {
-                        nombreEquipo1: "Nombre no disponible",
-                        nombreEquipo2: "Nombre no disponible",
-                        equipo1Cuota: "Cuota no disponible",
-                        equipo2Cuota: "Cuota no disponible",
-                        fechaHora: "Fecha y hora no disponibles",
-                    };
-                }
-                try {
-                    const response1 = await getApiData(
-                        `http://lapachanga-back.v2.test/api/equipos/${partido.equipo_id}`
-                    );
-                    const response2 = await getApiData(
-                        `http://lapachanga-back.v2.test/api/equipos/${partido.equipo2_id}`
-                    );
-                    const fechaHora = `${partido.fecha}T${partido.hora}`;
-                    return {
-                        nombreEquipo1: response1.nombre,
-                        nombreEquipo2: response2.nombre,
-                        fechaHora: fechaHora,
-                    };
-                } catch (error) {
-                    console.error("Error obteniendo nombres de equipos:", error);
-                    return {
-                        nombreEquipo1: "Nombre no disponible",
-                        nombreEquipo2: "Nombre no disponible",
-                        equipo1Cuota: "Cuota no disponible",
-                        equipo2Cuota: "Cuota no disponible",
-                        fechaHora: "Fecha y hora no disponibles",
-                    };
-                }
-            })
-        );
-        setNombresEquipos(nombresEquiposData);
-    };
+     const obtenerNombresEquipos = async (partidosData) => {
+          const nombresEquiposData = await Promise.all(
+               partidosData.map(async (partido) => {
+                    if (!partido) {
+                         return {
+                              nombreEquipo1: "Nombre no disponible",
+                              nombreEquipo2: "Nombre no disponible",
+                              equipo1Cuota: "Cuota no disponible",
+                              equipo2Cuota: "Cuota no disponible",
+                              fechaHora: "Fecha y hora no disponibles",
+                         };
+                    }
+                    try {
+                         const response1 = await getApiData(
+                              `http://lapachanga-back.v2.test/api/equipos/${partido.equipo_id}`
+                         );
+                         const response2 = await getApiData(
+                              `http://lapachanga-back.v2.test/api/equipos/${partido.equipo2_id}`
+                         );
+                         const fechaHora = `${partido.fecha}T${partido.hora}`;
+                         return {
+                              nombreEquipo1: response1.nombre,
+                              nombreEquipo2: response2.nombre,
+                              fechaHora: fechaHora,
+                         };
+                    } catch (error) {
+                         console.error("Error obteniendo nombres de equipos:", error);
+                         return {
+                              nombreEquipo1: "Nombre no disponible",
+                              nombreEquipo2: "Nombre no disponible",
+                              equipo1Cuota: "Cuota no disponible",
+                              equipo2Cuota: "Cuota no disponible",
+                              fechaHora: "Fecha y hora no disponibles",
+                         };
+                    }
+               })
+          );
+          setNombresEquipos(nombresEquiposData);
+     };
 
      const handleShowModal = (index) => {
           setSelectedPartidoIndex(index);
@@ -95,7 +95,7 @@ const PartidosActivos = () => {
                console.error("Índice de partido no válido:", index);
                return;
           }
-     
+
           const partidoId = partidos[index].id.toString();
           e.preventDefault();
           try {
@@ -113,7 +113,7 @@ const PartidosActivos = () => {
                console.error("Error al editar el partido:", error);
           }
      };
-     
+
 
      const handleEliminarPartido = async (index) => {
           const partidoId = partidos[index].id;

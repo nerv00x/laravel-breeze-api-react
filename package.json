@@ -41,8 +41,7 @@
     "typescript": "^5.0.2",
     "vite": "^4.3.9"
   },
-
-  "proxy":"https://harkaitz.informaticamajada.es",
-  "secure":false,
+  "proxy": "https://harkaitz.informaticamajada.es",
+  "secure": false,
   "homepage": "/build"
 }

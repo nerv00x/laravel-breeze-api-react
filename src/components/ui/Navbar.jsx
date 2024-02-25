@@ -1,4 +1,4 @@
-
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Fragment, useState, useEffect } from "react";
@@ -16,6 +16,7 @@ const initialNavigation = [
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
+const Saldo = sessionStorage.getItem("Saldo")
 
 export default function Navbar() {
   const { logout } = useAuthContext();
@@ -23,17 +24,16 @@ export default function Navbar() {
 
   useEffect(() => {
     const user_tipo = sessionStorage.getItem("TipoUsuario");
-    if (user_tipo === "admin" && !navigation.some(item => item.name === "Admin")) { //console.log(navigation);
+    if (user_tipo === "admin" && !navigation.some(item => item.name === "Admin")) {
       setNavigation([
         ...navigation,
         { name: "Admin", path: "/admin", current: false }
       ]);
     }
-    console.log(navigation);
   }, []);
 
   return (
-    <Disclosure as="nav" className="bg-50 shadow-md">
+    <Disclosure as="nav" className="bg-50 shadow-md" style={{ zIndex: 9999 }}>
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -50,14 +50,14 @@ export default function Navbar() {
                 </Disclosure.Button>
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                <div className="flex flex-shrink-0 items-center">
+                <div className="flex flex-shrink-0 items-center mr-40">
                   <img
                     className="h-8 w-auto"
                     src="/logo.png"
                     alt="Your Company"
                   />
                 </div>
-                <div className="hidden sm:ml-6 sm:block">
+                <div className="hidden sm:ml-6 sm:block ml-auto"> {/* Mover los enlaces hacia la derecha */}
                   <div className="flex space-x-4">
                     {navigation.map((item) => (
                       <NavLink
@@ -88,15 +88,13 @@ export default function Navbar() {
                   <BellIcon className="h-6 w-6" aria-hidden="true" />
                 </button>
 
-                {/* Profile dropdown */}
-                <Menu as="div" className="relative ml-3">
+                <Menu as="div" className="ml-3 relative">
                   <div>
-                    <Menu.Button className="relative flex rounded-full bg-stone-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-stone-800">
-                      <span className="absolute -inset-1.5" />
+                    <Menu.Button className="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                       <span className="sr-only">Open user menu</span>
                       <img
                         className="h-8 w-8 rounded-full"
-                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                        src="https://randomuser.me/api/portraits/men/1.jpg"
                         alt=""
                       />
                     </Menu.Button>
@@ -110,21 +108,27 @@ export default function Navbar() {
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                   >
-                    <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            to={""}
-                            onClick={logout}
-                            className={classNames(
-                              active ? "bg-stone-100" : "",
-                              "block px-4 py-2 text-sm text-stone-700"
-                            )}
-                          >
-                            Sign out
-                          </Link>
-                        )}
-                      </Menu.Item>
+                    <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <div className="px-4 py-3">
+                        <p className="text-sm">Signed in as</p>
+                        <p className="font-bold text-gray-900">{sessionStorage.getItem("NombreUsuario")}</p>
+                        <p className="text-sm text-gray-500">{sessionStorage.getItem("TipoUsuario")}</p>
+                      </div>
+                      <div className="border-t border-gray-100"></div>
+                      <div className="px-4 py-3">
+                        <p className="text-sm">Saldo</p>
+                        <p className="font-bold text-gray-900">${Saldo}</p>
+                      </div>
+                      <div className="border-t border-gray-100"></div>
+                      <div className="px-4 py-3">
+                        <Link
+                          to="/"
+                          onClick={logout}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                        >
+                          Sign out
+                        </Link>
+                      </div>
                     </Menu.Items>
                   </Transition>
                 </Menu>
