@@ -1,8 +1,11 @@
-import { createContext, useEffect, useState } from 'react';
-import axios from '../lib/axios';
-import { redirect, useNavigate } from 'react-router-dom';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { createContext, useEffect, useState } from "react";
+import axios from "../lib/axios"; // Asegúrate de importar axios desde la ubicación correcta
+import { useNavigate } from "react-router-dom";
+
 export const AuthContext = createContext({});
-const SESSION_NAME = 'session-verified';
+const SESSION_NAME = "session-verified";
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [errors, setErrors] = useState({});
@@ -11,11 +14,82 @@ export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const sessionData = window.localStorage.getItem(SESSION_NAME);
   const initialSessionVerified = sessionData ? JSON.parse(sessionData) : false;
-  const [sessionVerified, setSessionVerified] = useState(initialSessionVerified);
-  const csrf = () => axios.get('/sanctum/csrf-cookie');
+  const [sessionVerified, setSessionVerified] = useState(
+    initialSessionVerified
+  );
+
+  const csrf = () => axios.get("/sanctum/csrf-cookie");
+
+  // Función para realizar una solicitud GET
+  const getApiData = async (url) => {
+    try {
+      const response = await axios.get(url);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error;
+    }
+  };
+  const postApiData = async (url, data) => {
+    try {
+      await csrf();
+      const response = await axios.post(url, data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error;
+    }
+  };
+
+  const updateApiData = async (url, data) => {
+    try {
+      await csrf();
+      const response = await axios.put(url, data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error;
+    }
+  };
+
+  const deleteApiData = async (url) => {
+    try {
+      await csrf();
+      const response = await axios.delete(url);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error;
+    }
+  };
+
+  // Función para realizar una solicitud POST a la ruta "/api/apuestas"
+  const postApuestas = async (apuestaData) => {
+    try {
+      await csrf(); // Asegúrate de tener definida la función csrf
+      const response = await postApiData("/api/apuestas", apuestaData);
+      return response;
+    } catch (error) {
+      console.error("Error creating apuesta:", error);
+      throw error;
+    }
+  };
+
+  const postPartido = async (partidoData) => {
+    try {
+      await csrf(); // Asegúrate de tener definida la función csrf
+      const response = await postApiData("/api/partidos", partidoData);
+      return response;
+    } catch (error) {
+      console.error("Error creating apuesta:", error);
+      throw error;
+    }
+  };
+
+  // Función para obtener el usuario
   const getUser = async () => {
     try {
-      const { data } = await axios.get('/api/user');
+      const data = await getApiData("/api/user");
       setUser(data);
       setSessionVerified(true);
       window.localStorage.setItem(SESSION_NAME, "true");
@@ -30,13 +104,16 @@ export function AuthProvider({ children }) {
     setErrors({});
     setLoading(true);
     try {
-      await csrf(); // Esto debería configurar la cookie CSRF
-      // Luego haces la petición POST con Axios que ya debería enviar la cookie CSRF
-      await axios.post("api/login", data);
+      await csrf();
+      await axios.post("/login", data);
       await getUser();
     } catch (e) {
-      // Aquí manejas los errores, incluyendo el posible desajuste del token CSRF
-      // ...
+      if (typeof e === "object" && e !== null && "response" in e) {
+        console.warn(e.response.data);
+        setErrors(e.response.data.errors);
+      } else {
+        console.warn(e);
+      }
     } finally {
       setTimeout(() => setLoading(false), 2000);
     }
@@ -46,20 +123,16 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       await csrf();
-      await axios.post('/register', data);
+      await axios.post("/register", data);
       await getUser();
-      navigate("/")
-    }
-    catch (e) {
-      if (typeof e === 'object' && e !== null && 'response' in e) {
+    } catch (e) {
+      if (typeof e === "object" && e !== null && "response" in e) {
         console.warn(e.response.data);
         setErrors(e.response.data.errors);
-      }
-      else {
+      } else {
         console.warn(e);
       }
-    }
-    finally {
+    } finally {
       setTimeout(() => setLoading(false), 2000);
     }
   };
@@ -69,19 +142,16 @@ export function AuthProvider({ children }) {
     setStatus(null);
     try {
       await csrf();
-      const response = await axios.post('/forgot-password', data);
+      const response = await axios.post("/forgot-password", data);
       setStatus(response.data?.status);
-    }
-    catch (e) {
-      if (typeof e === 'object' && e !== null && 'response' in e) {
+    } catch (e) {
+      if (typeof e === "object" && e !== null && "response" in e) {
         console.warn(e.response.data);
         setErrors(e.response.data.errors);
-      }
-      else {
+      } else {
         console.warn(e);
       }
-    }
-    finally {
+    } finally {
       setTimeout(() => setLoading(false), 2000);
     }
   };
@@ -91,22 +161,19 @@ export function AuthProvider({ children }) {
     setStatus(null);
     try {
       await csrf();
-      const response = await axios.post('/reset-password', data);
+      const response = await axios.post("/reset-password", data);
       setStatus(response.data?.status);
       setTimeout(() => {
-        navigate('/login');
+        navigate("/login");
       }, 2000);
-    }
-    catch (e) {
-      if (typeof e === 'object' && e !== null && 'response' in e) {
+    } catch (e) {
+      if (typeof e === "object" && e !== null && "response" in e) {
         console.warn(e.response.data);
         setErrors(e.response.data.errors);
-      }
-      else {
+      } else {
         console.warn(e);
       }
-    }
-    finally {
+    } finally {
       setTimeout(() => setLoading(false), 2000);
     }
   };
@@ -116,19 +183,16 @@ export function AuthProvider({ children }) {
     setStatus(null);
     try {
       await csrf();
-      const response = await axios.post('/email/verification-notification');
+      const response = await axios.post("/email/verification-notification");
       setStatus(response.data?.status);
-    }
-    catch (e) {
-      if (typeof e === 'object' && e !== null && 'response' in e) {
+    } catch (e) {
+      if (typeof e === "object" && e !== null && "response" in e) {
         console.warn(e.response.data);
         setErrors(e.response.data.errors);
-      }
-      else {
+      } else {
         console.warn(e);
       }
-    }
-    finally {
+    } finally {
       setTimeout(() => setLoading(false), 2000);
     }
   };
@@ -138,8 +202,7 @@ export function AuthProvider({ children }) {
       await axios.post("/logout");
       setUser(null);
       window.localStorage.removeItem(SESSION_NAME);
-    }
-    catch (e) {
+    } catch (e) {
       console.warn(e);
     }
   };
@@ -147,11 +210,9 @@ export function AuthProvider({ children }) {
     const fetchUser = async () => {
       try {
         await getUser();
-      }
-      catch (e) {
+      } catch (e) {
         console.warn(e);
-      }
-      finally {
+      } finally {
         setLoading(false);
         setSessionVerified(false);
       }
@@ -160,21 +221,30 @@ export function AuthProvider({ children }) {
       fetchUser();
     }
   }, [user]);
-  return (<AuthContext.Provider value={{
-    csrf,
-    errors,
-    user,
-    login,
-    register,
-    logout,
-    loading,
-    status,
-    sessionVerified,
-    setStatus,
-    sendPasswordResetLink,
-    newPassword,
-    sendEmailVerificationLink,
-  }}>
-    {children}
-  </AuthContext.Provider>);
+  return (
+    <AuthContext.Provider
+      value={{
+        deleteApiData,
+        updateApiData,
+        postPartido,
+        getApiData,
+        postApiData,
+        postApuestas,
+        csrf, errors,
+        user,
+        login,
+        register,
+        logout,
+        loading,
+        status,
+        sessionVerified,
+        setStatus,
+        sendPasswordResetLink,
+        newPassword,
+        sendEmailVerificationLink,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }
