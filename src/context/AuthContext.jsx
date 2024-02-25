@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
     initialSessionVerified
   );
 
-  const csrf = () => axios.get("http://localhost:8000/sanctum/csrf-cookie");
+  const csrf = () => axios.get("/sanctum/csrf-cookie");
 
   // Función para realizar una solicitud GET
   const getApiData = async (url) => {
@@ -67,7 +67,7 @@ export function AuthProvider({ children }) {
   const postApuestas = async (apuestaData) => {
     try {
       await csrf(); // Asegúrate de tener definida la función csrf
-      const response = await postApiData("http://localhost:8000/api/apuestas", apuestaData);
+      const response = await postApiData("/api/apuestas", apuestaData);
       return response;
     } catch (error) {
       console.error("Error creating apuesta:", error);
@@ -78,7 +78,7 @@ export function AuthProvider({ children }) {
   const postPartido = async (partidoData) => {
     try {
       await csrf(); // Asegúrate de tener definida la función csrf
-      const response = await postApiData("http://localhost:8000/api/partidos", partidoData);
+      const response = await postApiData("/api/partidos", partidoData);
       return response;
     } catch (error) {
       console.error("Error creating apuesta:", error);
@@ -89,7 +89,7 @@ export function AuthProvider({ children }) {
   // Función para obtener el usuario
   const getUser = async () => {
     try {
-      const data = await getApiData("http://localhost:8000/api/user");
+      const data = await getApiData("/api/user");
       setUser(data);
       setSessionVerified(true);
       window.localStorage.setItem(SESSION_NAME, "true");
@@ -105,7 +105,7 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       await csrf();
-      await axios.post("http://localhost:8000/login", data);
+      await axios.post("/login", data);
       await getUser();
     } catch (e) {
       if (typeof e === "object" && e !== null && "response" in e) {
@@ -123,7 +123,7 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       await csrf();
-      await axios.post("http://localhost:8000/register", data);
+      await axios.post("/register", data);
       await getUser();
     } catch (e) {
       if (typeof e === "object" && e !== null && "response" in e) {
