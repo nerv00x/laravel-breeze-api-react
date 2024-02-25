@@ -12,29 +12,47 @@ export function AuthProvider({ children }) {
   const sessionData = window.localStorage.getItem(SESSION_NAME);
   const initialSessionVerified = sessionData ? JSON.parse(sessionData) : false;
   const [sessionVerified, setSessionVerified] = useState(initialSessionVerified);
-  const csrf = () => axios.get('/sanctum/csrf-cookie');
+  const csrf = () => {
+    return fetch('/sanctum/csrf-cookie', {
+      credentials: 'include', // Necesario para cookies como la CSRF
+    });
+  };
+
   const getUser = async () => {
     try {
-      const { data } = await axios.get('/api/user');
+      const response = await fetch('/api/user', {
+        credentials: 'include',
+      });
+      if (!response.ok) throw new Error('Network response was not ok.');
+      const data = await response.json();
       setUser(data);
       setSessionVerified(true);
       window.localStorage.setItem(SESSION_NAME, 'true');
-    }
-    catch (e) {
+    } catch (e) {
       console.warn('Error ', e);
     }
   };
-  const login = async ({ ...data }) => {
+
+  const login = async (data) => {
     setErrors({});
     setLoading(true);
     try {
       await csrf(); // Esto debería configurar la cookie CSRF
-      // Luego haces la petición POST con Axios que ya debería enviar la cookie CSRF
-      await axios.post("/login", data);
+      // Luego haces la petición POST con Fetch que ya debería enviar la cookie CSRF
+      const response = await fetch("/login", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Para incluir la cookie CSRF
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Network response was not ok.');
       await getUser();
     } catch (e) {
       // Aquí manejas los errores, incluyendo el posible desajuste del token CSRF
-      // ...
+      console.error(e.message);
+      // ... manejo de errores específicos ...
     } finally {
       setTimeout(() => setLoading(false), 2000);
     }
