@@ -39,7 +39,7 @@ export function AuthProvider({ children }) {
     try {
       await csrf(); // Esto debería configurar la cookie CSRF
       // Luego haces la petición POST con Fetch que ya debería enviar la cookie CSRF
-      const response = await fetch("/login", {
+      const response = await fetch("harkaitz.informaticamajada.es/login", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
