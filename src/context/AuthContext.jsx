@@ -12,7 +12,7 @@ export function AuthProvider({ children }) {
   const sessionData = window.localStorage.getItem(SESSION_NAME);
   const initialSessionVerified = sessionData ? JSON.parse(sessionData) : false;
   const [sessionVerified, setSessionVerified] = useState(initialSessionVerified);
-  const getCsrfCookie = () => axios.get('/sanctum/csrf-cookie');
+  const csrf = () => axios.get('/sanctum/csrf-cookie');
   const getUser = async () => {
     try {
       const { data } = await axios.get('/api/user');
@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
     setErrors({});
     setLoading(true);
     try {
-      await getCsrfCookie(); // This should set the CSRF cookie
+      await csrf(); // This should set the CSRF cookie
       // Then you make the POST request with Axios which should now send the CSRF cookie
       await axios.post("/login", data, {
         headers: {
