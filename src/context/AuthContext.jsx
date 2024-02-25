@@ -12,28 +12,34 @@ export function AuthProvider({ children }) {
   const sessionData = window.localStorage.getItem(SESSION_NAME);
   const initialSessionVerified = sessionData ? JSON.parse(sessionData) : false;
   const [sessionVerified, setSessionVerified] = useState(initialSessionVerified);
-  const csrf = () => axios.get('/sanctum/csrf-cookie');
+  const getCsrfCookie = () => axios.get('/sanctum/csrf-cookie');
   const getUser = async () => {
     try {
       const { data } = await axios.get('/api/user');
       setUser(data);
       setSessionVerified(true);
       window.localStorage.setItem(SESSION_NAME, 'true');
-    }
-    catch (e) {
+    } catch (e) {
       console.warn('Error ', e);
     }
   };
-  const login = async ({ ...data }) => {
+
+  const login = async ({ _token, ...restData }) => {
+    const csrfToken = _token; // csrfToken now holds the value of _token
+    const data = restData;    // data is an object with the rest of the properties
     setErrors({});
     setLoading(true);
     try {
-      await csrf(); // Esto debería configurar la cookie CSRF
-      // Luego haces la petición POST con Axios que ya debería enviar la cookie CSRF
-      await axios.post("/login", data);
+      await getCsrfCookie(); // This should set the CSRF cookie
+      // Then you make the POST request with Axios which should now send the CSRF cookie
+      await axios.post("/login", data, {
+        headers: {
+          'X-CSRF-TOKEN': csrfToken // Pass the CSRF token in the request headers
+        }
+      });
       await getUser();
     } catch (e) {
-      // Aquí manejas los errores, incluyendo el posible desajuste del token CSRF
+      // Here you handle errors, including any possible CSRF token mismatch
       // ...
     } finally {
       setTimeout(() => setLoading(false), 2000);
