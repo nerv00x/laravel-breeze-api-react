@@ -12,7 +12,7 @@ export function AuthProvider({ children }) {
   const sessionData = window.localStorage.getItem(SESSION_NAME);
   const initialSessionVerified = sessionData ? JSON.parse(sessionData) : false;
   const [sessionVerified, setSessionVerified] = useState(initialSessionVerified);
-  const csrf = () => axios.get('/sanctum/csrf-cookie');
+  const csrf = () => axios.get('https://harkaitz.informaticamajada.es/sanctum/csrf-cookie');
   const getUser = async () => {
     try {
       const { data } = await axios.get('https://harkaitz.informaticamajada.es/api/user');
