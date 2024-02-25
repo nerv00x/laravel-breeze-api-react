@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
     try {
       await csrf(); // Esto debería configurar la cookie CSRF
       // Luego haces la petición POST con Axios que ya debería enviar la cookie CSRF
-      await axios.post("/login", data);
+      await axios.post("api/login", data);
       await getUser();
     } catch (e) {
       // Aquí manejas los errores, incluyendo el posible desajuste del token CSRF
