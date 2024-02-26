@@ -15,7 +15,7 @@ const ApuestasPage = () => {
     const fetchData = async () => {
       try {
         const data = await getApiData(
-          `http://locahost:8000/api/apuestas/usuario/${user_id}`
+          `http://localhost:8000/api/apuestas/usuario/${user_id}`
         );
         setPartidos(data);
         obtenerNombresEquipos(data);
@@ -35,7 +35,7 @@ const ApuestasPage = () => {
         }
         try {
           const response = await getApiData(
-            `http://locahost:8000/api/equipos/${partido.equipo_id}`
+            `http://localhost:8000/api/equipos/${partido.equipo_id}`
           );
           nombresEquiposData[partido.equipo_id] = response.nombre;
         } catch (error) {
