@@ -27,7 +27,7 @@ const PartidosActivos = () => {
     const fetchData = async () => {
       try {
         const data = await getApiData(
-          "http://localhost:8000/api/partidos/today"
+          "https://harkaitz.informaticamajada.es/api/partidos/today"
         );
         setPartidos(filteredPartidos);
         obtenerNombresEquipos(filteredPartidos);

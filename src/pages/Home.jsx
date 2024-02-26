@@ -28,7 +28,7 @@ const PartidosActivos = () => {
       try {
         const data = await getApiData(
 
-          "http://localhost:8000/api/partidos/this-week"
+          "https://harkaitz.informaticamajada.es/api/partidos/this-week"
 
 
         );
