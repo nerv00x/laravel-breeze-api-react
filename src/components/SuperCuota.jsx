@@ -76,7 +76,7 @@ function SuperCuota() {
 
     return (
         <>
-            <Card className="bg-amber-400 text-center mb-3">
+            <Card className="bg-amber-400 text-center mt-5 ml-10">
                 <Card.Body>
                     <Card.Title>Supercuota del día</Card.Title>
                     <Card.Text>

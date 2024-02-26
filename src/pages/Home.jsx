@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect, useContext } from "react";
-import { Card, Button, Modal, Form } from "react-bootstrap";
+import { Card, Button, Modal, Form, Col, Row } from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
-import SuperCuota from "../components/SuperCuota"; // Importa el nuevo componente
-import Sidebar from "../components/sidebar"; 
+import SuperCuota from "../components/SuperCuota";
+import Sidebar from "../components/sidebar";
 import "../App.css";
 
 const PartidosActivos = () => {
@@ -16,8 +16,9 @@ const PartidosActivos = () => {
   const [apuestaData, setApuestaData] = useState({
     montoApostado: 10,
     resultadoEquipoGanador: "",
+    resultado: "3-0",
   });
-  const [currentPage, setCurrentPage] = useState(1);  
+  const [currentPage, setCurrentPage] = useState(1);
   const [partidosPerPage] = useState(4);
   const [successMessage, setSuccessMessage] = useState("");
   const [superCuota, setSuperCuota] = useState(null);
@@ -26,9 +27,8 @@ const PartidosActivos = () => {
     const fetchData = async () => {
       try {
         const data = await getApiData(
-          "http://localhost:8000/api/partidos/today"
+          "http://localhost:8000/api/partidos/this-week"
         );
-        // Filtrar solo los partidos del día actual o futuros
         const currentDate = new Date().toISOString().split("T")[0];
         const filteredPartidos = data.filter(
           (partido) => partido.fecha >= currentDate
@@ -42,8 +42,6 @@ const PartidosActivos = () => {
 
     fetchData();
   }, []);
-
-
 
   const obtenerNombresEquipos = async (partidosData) => {
     const nombresEquiposData = await Promise.all(
@@ -67,7 +65,6 @@ const PartidosActivos = () => {
           const cuotaresponse = await getApiData(
             `http://localhost:8000/api/partidos/${partido.id}/cuotas`
           );
-          // Combinar fecha y hora
           const fechaHora = `${partido.fecha}T${partido.hora}`;
           return {
             nombreEquipo1: response1.nombre,
@@ -113,14 +110,14 @@ const PartidosActivos = () => {
       const partidoSeleccionado = partidos[selectedPartidoIndex];
       const cuotaEquipoSeleccionado =
         apuestaData.resultadoEquipoGanador ===
-          nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
+        nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
           ? nombresEquipos[selectedPartidoIndex]?.equipo1Cuota
           : nombresEquipos[selectedPartidoIndex]?.equipo2Cuota;
 
       const user_id = sessionStorage.getItem("userId");
       const equipo_id =
         apuestaData.resultadoEquipoGanador ===
-          nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
+        nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
           ? partidos[selectedPartidoIndex].equipo_id
           : partidos[selectedPartidoIndex].equipo2_id;
 
@@ -134,6 +131,7 @@ const PartidosActivos = () => {
         equipo_id: equipo_id,
         sala_id: 1,
         partido_id: partidoSeleccionado.id,
+        resultado: apuestaData.resultado,
       };
       const response = await postApuestas(nuevaApuesta);
       setSuccessMessage("Apuesta creada con éxito");
@@ -161,6 +159,23 @@ const PartidosActivos = () => {
     return horaActual > fechaHoraPartidoDate;
   };
 
+  const comparePartidos = (partidoA, partidoB) => {
+    const esHoraMayorPartidoA = isHoraMayorQueActual(
+      `${partidoA.fecha}T${partidoA.hora}`
+    );
+    const esHoraMayorPartidoB = isHoraMayorQueActual(
+      `${partidoB.fecha}T${partidoB.hora}`
+    );
+
+    if (esHoraMayorPartidoA && !esHoraMayorPartidoB) {
+      return 1; // Mover partidoA después de partidoB
+    } else if (!esHoraMayorPartidoA && esHoraMayorPartidoB) {
+      return -1; // Mover partidoA antes de partidoB
+    } else {
+      return 0; // No cambiar el orden entre partidoA y partidoB
+    }
+  };
+
   const indexOfLastPartido = currentPage * partidosPerPage;
   const indexOfFirstPartido = indexOfLastPartido - partidosPerPage;
   const currentPartidos = partidos.slice(
@@ -185,124 +200,176 @@ const PartidosActivos = () => {
   const paginatePrev = () => {
     setCurrentPage(currentPage - 1);
   };
+
   return (
-    
-    <div className="flex flex-wrap mt-5">
-            <div className="flex">
-      <Sidebar />
-      <div className="flex-1">
-        {/* Aquí va el contenido principal de tu aplicación */}
-      </div>
-    </div>
-      {successMessage && (
-        <div
-          className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded absolute top-12 right-10 mt-4 ml-4"
-          role="alert"
-        >
-          <strong className="font-bold">Éxito!</strong>
-          <span className="block sm:inline"> {successMessage}</span>
-        </div>
-      )}
-      <h1 className="text-black w-full text-center mb-4"></h1>
-
-      <div className="w-full md:w-3/4 flex flex-col items-center pl-40 ">
-        {/* Aquí van los partidos */}
-        {currentPartidos.map((partido, index) => (
-          <Card key={partido.id} className="bg-amber-400 text-center row col-6" id="card">
-            <Card.Body>
-              <Card.Title>
-                {nombresEquipos[index]
-                  ? `${nombresEquipos[index].nombreEquipo1} vs ${nombresEquipos[index].nombreEquipo2}`
-                  : "Loading..."}
-              </Card.Title>
-              <Card.Text>
-                Fecha: {partido.fecha}
-                <br />
-                Hora: {partido.hora}
-                <br />
-                {index === currentPartidos.length - 1 && superCuota && (
-                  <>
-                    <strong>Supercuota del día:</strong>
-                    <br />
-                    Nombre: {superCuota.nombre}
-                    <br />
-                    Equipo ID: {superCuota.equipo_id}
-                    <br />
-                    Cuota ID: {superCuota.cuota_id}
-                    <br />
-                    Partido ID: {superCuota.partido_id}
-                  </>
-                )}
-              </Card.Text>
-              <Button
-                className="btn text-dark bg-emerald-500"
-                onClick={() => handleShowModal(index)}
-                disabled={isHoraMayorQueActual(`${partido.fecha}T${partido.hora}`)}
-              >
-                Apostar
-              </Button>
-            </Card.Body>
-          </Card>
-        ))}
-        {/* Botones de paginación */}
-        <div className="w-full flex justify-center mb-4">
-          <Button
-            variant="secondary"
-            onClick={paginatePrev}
-            disabled={currentPage === 1}
-            className="text-black bg-blue-500"
-          >
-            Anterior
-          </Button>
-          {pageNumbers.map((pageNumber) => (
-            <button
-              key={pageNumber}
-              className={`${currentPage === pageNumber
-                ? "bg-blue-500 text-black"
-                : "bg-gray-200 text-gray-700"
-                } py-2 px-4 mx-1 rounded`}
-              onClick={() => handleClickPage(pageNumber)}
+    <div className="container-fluid">
+      <div className="row ml-40">
+        <Sidebar />
+        <div className="col-md-7">
+          <h1 className="text-center mb-4">Partidos Activos</h1>
+          {successMessage && (
+            <div
+              className="alert alert-success alert-dismissible fade show"
+              role="alert"
             >
-              {pageNumber}
-            </button>
+              <strong>Éxito!</strong> {successMessage}
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+              ></button>
+            </div>
+          )}
+          {currentPartidos.sort(comparePartidos).map((partido, index) => (
+            <Card key={partido.id} className="mb-6">
+              <Card.Body>
+                <Card.Title className="text-center mb-4">
+                  {nombresEquipos[index]
+                    ? `${nombresEquipos[index].nombreEquipo1} vs ${nombresEquipos[index].nombreEquipo2}`
+                    : "Loading..."}
+                </Card.Title>
+                <Card.Text>
+                  <strong>Fecha:</strong> {partido.fecha}
+                  <br />
+                  <strong>Hora:</strong> {partido.hora}
+                  <br />
+                  {index === currentPartidos.length - 1 && superCuota && (
+                    <>
+                      <strong>Supercuota del día:</strong>
+                      <br />
+                      Nombre: {superCuota.nombre}
+                      <br />
+                      Equipo ID: {superCuota.equipo_id}
+                      <br />
+                      Cuota ID: {superCuota.cuota_id}
+                      <br />
+                      Partido ID: {superCuota.partido_id}
+                    </>
+                  )}
+                </Card.Text>
+                <Button
+                  className="btn text-dark bg-success w-100"
+                  onClick={() => handleShowModal(index)}
+                  disabled={isHoraMayorQueActual(
+                    `${partido.fecha}T${partido.hora}`
+                  )}
+                >
+                  Apostar
+                </Button>
+              </Card.Body>
+            </Card>
           ))}
-          <Button
-            variant="secondary"
-            onClick={paginateNext}
-            disabled={indexOfLastPartido >= partidos.length}
-            className="text-black bg-blue-500"
-          >
-            Siguiente
-          </Button>
+          <div className="mt-4">
+            <div className="d-flex justify-content-center">
+              <Button
+                variant="secondary"
+                onClick={paginatePrev}
+                disabled={currentPage === 1}
+                className="me-2"
+              >
+                Anterior
+              </Button>
+              {pageNumbers.map((pageNumber) => (
+                <button
+                  key={pageNumber}
+                  className={`btn ${
+                    currentPage === pageNumber
+                      ? "btn-primary"
+                      : "btn-secondary"
+                  } me-2`}
+                  onClick={() => handleClickPage(pageNumber)}
+                >
+                  {pageNumber}
+                </button>
+              ))}
+              <Button
+                variant="secondary"
+                onClick={paginateNext}
+                disabled={indexOfLastPartido >= partidos.length}
+              >
+                Siguiente
+              </Button>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-4">
+          <SuperCuota />
         </div>
       </div>
-
-      <div className="w-full md:w-1/4 pl-4 flex flex-col items-center">
-        <SuperCuota />
-      </div>
-      <div className="w-full flex justify-center mb-4">
-      </div>
-      <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton className="bg-red-500">
+      <div>
+      <Modal show={showModal} onHide={handleCloseModal} className="mt-5">
+        <Modal.Header closeButton className="bg-danger text-white">
           <Modal.Title>Realizar Apuesta</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="bg-gray-500">
-          <div>
-            <p className="">
-              {nombresEquipos[selectedPartidoIndex]?.nombreEquipo1} - Cuota:{" "}
-              {nombresEquipos[selectedPartidoIndex]?.equipo1Cuota}
-            </p>
-            <p>
-              {nombresEquipos[selectedPartidoIndex]?.nombreEquipo2} - Cuota:{" "}
-              {nombresEquipos[selectedPartidoIndex]?.equipo2Cuota}
-            </p>
-          </div>
+        <Modal.Body className="bg-light">
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+              <Form.Label>Equipo</Form.Label>
+              <Form.Control
+                as="select"
+                name="resultadoEquipoGanador"
+                onChange={handleChange}
+                value={apuestaData.resultadoEquipoGanador}
+              >
+                {nombresEquipos[selectedPartidoIndex] && (
+                  <>
+                    <option>
+                      {nombresEquipos[selectedPartidoIndex].nombreEquipo1} -{" "}
+                      Cuota: {nombresEquipos[selectedPartidoIndex].equipo1Cuota}
+                    </option>
+                    <option>
+                      {nombresEquipos[selectedPartidoIndex].nombreEquipo2} -{" "}
+                      Cuota: {nombresEquipos[selectedPartidoIndex].equipo2Cuota}
+                    </option>
+                  </>
+                )}
+              </Form.Control>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Cuota</Form.Label>
+              <Form.Control
+                type="text"
+                value={
+                  apuestaData.resultadoEquipoGanador ===
+                  nombresEquipos[selectedPartidoIndex]?.nombreEquipo1
+                    ? nombresEquipos[selectedPartidoIndex]?.equipo1Cuota
+                    : nombresEquipos[selectedPartidoIndex]?.equipo2Cuota
+                }
+                readOnly
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Resultado</Form.Label>
+              <Form.Control
+                as="select"
+                name="resultado"
+                onChange={handleChange}
+                value={apuestaData.resultado}
+              >
+                <option value="3-0">3-0</option>
+                <option value="3-1">3-1</option>
+                <option value="3-2">3-2</option>
+              </Form.Control>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Monto Apostado</Form.Label>
+              <Form.Control
+                type="number"
+                name="montoApostado"
+                value={apuestaData.montoApostado}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit">
+              Apostar
+            </Button>
+          </Form>
         </Modal.Body>
       </Modal>
+      </div>
     </div>
   );
-
-
 };
 
 export default PartidosActivos;

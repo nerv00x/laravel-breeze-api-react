@@ -1,5 +1,5 @@
 nav {
-    background-color: #f30c0c; /* Cambia este color según tus preferencias */
+    background-color: #ff6565; /* Cambia este color según tus preferencias */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
   
@@ -15,7 +15,7 @@ nav {
   
   nav .nav-link:hover,
   nav .nav-link.active {
-    background-color: #680000; /* Cambia este color según tus preferencias */
+    background-color: #f05555; /* Cambia este color según tus preferencias */
     color: #fff; /* Cambia este color según tus preferencias */
   }
   

@@ -18,10 +18,10 @@ const PartidosActivos = () => {
      const [showCrearPartido, setShowCrearPartido] = useState(false);
 
      useEffect(() => {
-          const fetchData = async () => {
+          const fetchData = async () => {    
                try {
                     const data = await getApiData(
-                         "http://localhost:8000/api/partidos/this-week"
+                         "http://localhost:8000/api/partidos"
                     );
                     // Filtrar solo los partidos del día actual o futuros
                     const currentDate = new Date().toISOString().split("T")[0];

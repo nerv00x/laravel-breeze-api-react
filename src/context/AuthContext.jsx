@@ -96,6 +96,7 @@ export function AuthProvider({ children }) {
       // Guardar el ID del usuario en sessionStorage
       sessionStorage.setItem("userId", data.id);
       sessionStorage.setItem("TipoUsuario", data.rol);
+      sessionStorage.setItem("Saldo", data.saldo);
     } catch (error) {
       console.error("Error getting user:", error);
     }
