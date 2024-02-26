@@ -10,36 +10,24 @@ const Sidebar = () => {
   return (
     <div className="relative">
       {/* Botón de alternancia del Sidebar */}
-      <button
-        className="lg:hidden relative top-0 left- m-4 text-white focus:outline-none z-50"
-        onClick={toggleSidebar}
-      >
-        <svg
-          className="h-8 w-8 fill-current"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-        >
-          {isOpen ? (
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M19 13H5v-2h14v2zM3 8h18V6H3v2zm16 7H5v-2h14v2z"
-            />
-          ) : (
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"
-            />
-          )}
-        </svg>
-      </button>
+
+
+
+
+
+
+
+
+
+
+
+
 
       {/* Contenido del Sidebar */}
       <div
-        className={`border-2 bg-opacity-75 h-full fixed top-12 left-0 lg:w-56 md:w-40 w-16 overflow-y-auto z-40 ${
-          isOpen ? 'block' : 'hidden lg:block'
-        }`}
+        className={`border-2 bg-opacity-75 h-full fixed bottom-0 left-0 lg:w-40 md:w-32 w-16 overflow-y-auto z-40 ${isOpen ? 'block' : 'hidden lg:block'
+          }`}
+        style={{ flexDirection: 'column-reverse' }} // Cambia la dirección del flujo de columnas de abajo hacia arriba
       >
         <div className="p-4">
           <ul className="space-y-4">

@@ -41,6 +41,7 @@ export function AuthProvider({ children }) {
     }
   };
 
+  
   const updateApiData = async (url, data) => {
     try {
       await csrf();
@@ -74,6 +75,19 @@ export function AuthProvider({ children }) {
       throw error;
     }
   };
+
+  const postSupercuota = async (cuotaData) => {
+    try {
+      await csrf(); // Asegúrate de tener definida la función csrf
+      const response = await updateApiData("/api/supercuota/1",  cuotaData);
+      return response;
+    } catch (error) {
+      console.error("Error creating apuesta:", error);
+      throw error;
+    }
+  };
+
+
 
   const postPartido = async (partidoData) => {
     try {
@@ -225,6 +239,7 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider
       value={{
+        postSupercuota,
         deleteApiData,
         updateApiData,
         postPartido,

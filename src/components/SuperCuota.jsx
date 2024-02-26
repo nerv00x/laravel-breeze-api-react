@@ -82,13 +82,12 @@ function SuperCuota() {
                     <Card.Text>
                         {superCuotaData ? (
                             <>
-                                <strong>Nombre:</strong> {superCuotaData.nombre}
+                                {superCuotaData.nombre}
                                 <br />
                                 <strong>Equipo:</strong> {equipoNombre}
                                 <br />
                                 <strong>Cuota:</strong> {cuotaValor}
                                 <br />
-                                <strong>Partido ID:</strong> {superCuotaData.partido_id}
                             </>
                         ) : (
                             "Cargando supercuota..."
