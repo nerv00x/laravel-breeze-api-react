@@ -27,7 +27,10 @@ const PartidosActivos = () => {
     const fetchData = async () => {
       try {
         const data = await getApiData(
+
           "http://localhost:8000/api/partidos/this-week"
+
+
         );
         const currentDate = new Date().toISOString().split("T")[0];
         const filteredPartidos = data.filter(
@@ -57,13 +60,13 @@ const PartidosActivos = () => {
         }
         try {
           const response1 = await getApiData(
-            `http://localhost:8000/api/equipos/${partido.equipo_id}`
+            `https://harkaitz.informaticamajada.es/api/equipos/${partido.equipo_id}`
           );
           const response2 = await getApiData(
-            `http://localhost:8000/api/equipos/${partido.equipo2_id}`
+            `https://harkaitz.informaticamajada.es/api/equipos/${partido.equipo2_id}`
           );
           const cuotaresponse = await getApiData(
-            `http://localhost:8000/api/partidos/${partido.id}/cuotas`
+            `https://harkaitz.informaticamajada.es/api/partidos/${partido.id}/cuotas`
           );
           const fechaHora = `${partido.fecha}T${partido.hora}`;
           return {
