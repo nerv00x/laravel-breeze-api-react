@@ -16,21 +16,21 @@ function SuperCuota() {
         const fetchData = async () => {
             try {
                 const superCuotaResponse = await getApiData(
-                    "http://localhost:8000/api/supercuota"
+                    "https://harkaitz.informaticamajada.es/api/supercuota"
                 );
                 const superCuota = superCuotaResponse[0];
                 setSuperCuotaData(superCuota);
 
                 // Obtener nombre del equipo
                 const equipoResponse = await getApiData(
-                    `http://localhost:8000/api/equipos/${superCuota.equipo_id}`
+                    `https://harkaitz.informaticamajada.es/api/equipos/${superCuota.equipo_id}`
                 );
                 setEquipoNombre(equipoResponse.nombre);
                 setEquipoId(superCuota.equipo_id);
 
                 // Obtener valor de la cuota
                 const cuotaResponse = await getApiData(
-                    `http://localhost:8000/api/cuotas/${superCuota.cuota_id}`
+                    `https://harkaitz.informaticamajada.es/api/cuotas/${superCuota.cuota_id}`
                 );
                 setCuotaValor(cuotaResponse.valor);
 
