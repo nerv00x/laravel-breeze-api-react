@@ -22,7 +22,7 @@ const PartidosActivos = () => {
           const fetchData = async () => {
                try {
                     const data = await getApiData(
-                         "https://localhost:8000/api/partidos"
+                         "https://harkaitz.informaticamajada.es/api/partidos"
                     );
                     // Filtrar solo los partidos del día actual o futuros
                     const currentDate = new Date().toISOString().split("T")[0];
