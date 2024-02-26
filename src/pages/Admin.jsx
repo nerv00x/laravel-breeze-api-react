@@ -21,7 +21,7 @@ const PartidosActivos = () => {
           const fetchData = async () => {
                try {
                     const data = await getApiData(
-                         "http://localhost:8000/api/partidos/this-week"
+                         "https://harkaitz.informaticamajada.es/api/partidos/this-week"
                     );
                     // Filtrar solo los partidos del día actual o futuros
                     const currentDate = new Date().toISOString().split("T")[0];
@@ -52,10 +52,10 @@ const PartidosActivos = () => {
                     }
                     try {
                          const response1 = await getApiData(
-                              `http://lapachanga-back.v2.test/api/equipos/${partido.equipo_id}`
+                              `https://harkaitz.informaticamajada.es/api/equipos/${partido.equipo_id}`
                          );
                          const response2 = await getApiData(
-                              `http://lapachanga-back.v2.test/api/equipos/${partido.equipo2_id}`
+                              `https://harkaitz.informaticamajada.es/api/equipos/${partido.equipo2_id}`
                          );
                          const fechaHora = `${partido.fecha}T${partido.hora}`;
                          return {
@@ -100,7 +100,7 @@ const PartidosActivos = () => {
           e.preventDefault();
           try {
                await postApiData(
-                    `http://localhost:8000/api/partidos/update/${partidoId}`,
+                    `https://harkaitz.informaticamajada.es/api/partidos/update/${partidoId}`,
                     editingPartido
                );
                setSuccessMessage("Partido editado con éxito");
@@ -118,7 +118,7 @@ const PartidosActivos = () => {
      const handleEliminarPartido = async (index) => {
           const partidoId = partidos[index].id;
           try {
-               await deleteApiData(`http://localhost:8000/api/partidos/${partidoId}`);
+               await deleteApiData(`https://harkaitz.informaticamajada.es/api/partidos/${partidoId}`);
                setSuccessMessage("Partido eliminado con éxito");
                setTimeout(() => setSuccessMessage(""), 3000);
                setPartidos(partidos.filter((partido) => partido.id !== partidoId));

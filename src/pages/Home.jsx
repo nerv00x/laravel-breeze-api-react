@@ -26,7 +26,7 @@ const PartidosActivos = () => {
     const fetchData = async () => {
       try {
         const data = await getApiData(
-          "http://localhost:8000/api/partidos/today"
+          "https://harkaitz.informaticamajada.es/api/partidos/today"
         );
         // Filtrar solo los partidos del día actual o futuros
         const currentDate = new Date().toISOString().split("T")[0];
@@ -59,13 +59,13 @@ const PartidosActivos = () => {
         }
         try {
           const response1 = await getApiData(
-            `http://localhost:8000/api/equipos/${partido.equipo_id}`
+            `https://harkaitz.informaticamajada.es/api/equipos/${partido.equipo_id}`
           );
           const response2 = await getApiData(
-            `http://localhost:8000/api/equipos/${partido.equipo2_id}`
+            `https://harkaitz.informaticamajada.es/api/equipos/${partido.equipo2_id}`
           );
           const cuotaresponse = await getApiData(
-            `http://localhost:8000/api/partidos/${partido.id}/cuotas`
+            `https://harkaitz.informaticamajada.es/api/partidos/${partido.id}/cuotas`
           );
           // Combinar fecha y hora
           const fechaHora = `${partido.fecha}T${partido.hora}`;
