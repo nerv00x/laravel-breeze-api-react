@@ -16,7 +16,7 @@ const ApuestasPage = () => {
     const fetchData = async () => {
       try {
         const data = await getApiData(
-          `https://harkaitz.informaticamajada.es/api/apuestas/usuario/${user_id}`
+          `http://locahost:8000/api/apuestas/usuario/${user_id}`
         );
         setPartidos(data);
         obtenerNombresEquipos(data);
@@ -40,7 +40,7 @@ const ApuestasPage = () => {
         }
         try {
           const response1 = await getApiData(
-            `https://harkaitz.informaticamajada.es/api/equipos/${partido.equipo_id}`
+            `http://locahost:8000/api/equipos/${partido.equipo_id}`
           );
 
           return {

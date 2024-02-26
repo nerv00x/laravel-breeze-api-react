@@ -60,13 +60,13 @@ const PartidosActivos = () => {
         }
         try {
           const response1 = await getApiData(
-            `https://harkaitz.informaticamajada.es/api/equipos/${partido.equipo_id}`
+            `http://locahost:8000/api/equipos/${partido.equipo_id}`
           );
           const response2 = await getApiData(
-            `https://harkaitz.informaticamajada.es/api/equipos/${partido.equipo2_id}`
+            `http://locahost:8000/api/equipos/${partido.equipo2_id}`
           );
           const cuotaresponse = await getApiData(
-            `https://harkaitz.informaticamajada.es/api/partidos/${partido.id}/cuotas`
+            `http://locahost:8000/api/partidos/${partido.id}/cuotas`
           );
           const fechaHora = `${partido.fecha}T${partido.hora}`;
           return {

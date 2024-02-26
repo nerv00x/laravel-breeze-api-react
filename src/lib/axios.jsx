@@ -1,6 +1,6 @@
 import axios from 'axios';
 const instance = axios.create({
-    baseURL:'https://harkaitz.informaticamajada.es',
+    baseURL:'http://localhost:8000',
     withXSRFToken: true,
     withCredentials: true,
     xsrfCookieName:'XSRF-TOKEN',

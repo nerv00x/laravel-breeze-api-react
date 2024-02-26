@@ -4,7 +4,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Card, Button, Modal, Form, Col, Row } from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
 import SuperCuota from "../components/SuperCuota";
-import Sidebar from "../components/sidebar";
+import Sidebar from "../components/sidebar"; // Corrección en la importación del componente Sidebar
 import "../App.css";
 
 const PartidosActivos = () => {
@@ -29,8 +29,8 @@ const PartidosActivos = () => {
         const data = await getApiData(
           "http://localhost:8000/api/partidos/today"
         );
-        setPartidos(filteredPartidos);
-        obtenerNombresEquipos(filteredPartidos);
+        setPartidos(data); // Corrección en la asignación de datos a partidos
+        obtenerNombresEquipos(data); // Pasamos data directamente a la función obtenerNombresEquipos
       } catch (error) {
         console.error("Error fetching partidos:", error);
       }
@@ -53,13 +53,13 @@ const PartidosActivos = () => {
         }
         try {
           const response1 = await getApiData(
-            `https://harkaitz.informaticamajada.es/api/equipos/${partido.equipo_id}`
+            `http://localhost:8000/api/equipos/${partido.equipo_id}`
           );
           const response2 = await getApiData(
-            `https://harkaitz.informaticamajada.es/api/equipos/${partido.equipo2_id}`
+            `http://localhost:8000/api/equipos/${partido.equipo2_id}`
           );
           const cuotaresponse = await getApiData(
-            `https://harkaitz.informaticamajada.es/api/partidos/${partido.id}/cuotas`
+            `http://localhost:8000/api/partidos/${partido.id}/cuotas`
           );
           const fechaHora = `${partido.fecha}T${partido.hora}`;
           return {
@@ -199,7 +199,7 @@ const PartidosActivos = () => {
 
   return (
     <div className="container-fluid">
-      <div className="row ml-40">
+      <div className="row">
         <Sidebar />
         <div className="col-md-7">
           <h1 className="text-center mb-4">Partidos Activos</h1>
@@ -293,7 +293,6 @@ const PartidosActivos = () => {
           <SuperCuota />
         </div>
       </div>
-      <div>
       <Modal show={showModal} onHide={handleCloseModal} className="mt-5">
         <Modal.Header closeButton className="bg-danger text-white">
           <Modal.Title>Realizar Apuesta</Modal.Title>
@@ -363,7 +362,6 @@ const PartidosActivos = () => {
           </Form>
         </Modal.Body>
       </Modal>
-      </div>
     </div>
   );
 };
