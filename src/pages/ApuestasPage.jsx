@@ -34,7 +34,7 @@ const ApuestasPage = () => {
           return;
         }
         try {
-          const response1 = await getApiData(
+          const response = await getApiData(
             `http://locahost:8000/api/equipos/${partido.equipo_id}`
           );
           nombresEquiposData[partido.equipo_id] = response.nombre;
