@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Card, Button } from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
+import Sidebar from "../components/ui/Sidebar";
 
 const ApuestasPage = () => {
   const user_id = sessionStorage.getItem("userId");

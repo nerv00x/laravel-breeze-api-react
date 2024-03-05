@@ -2,9 +2,12 @@ import React, { useState, useEffect, useContext } from "react";
 import { Card, Button, Modal, Form } from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
 import SuperCuota from "../components/SuperCuota";
-import Sidebar from "../components/Sidebar";
+import CustomSidebar from "../components/ui/Sidebar";
 import Footer from "../components/Footer";
-import "../App.css";
+import { Paginator } from 'primereact/paginator';
+import 'primereact/resources/themes/bootstrap4-dark-purple/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
 
 const PartidosActivos = () => {
   const { getApiData, postApuestas } = useContext(AuthContext);
@@ -17,7 +20,7 @@ const PartidosActivos = () => {
     resultadoEquipoGanador: "",
     resultado: "3-0",
   });
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const [partidosPerPage] = useState(4);
   const [successMessage, setSuccessMessage] = useState("");
   const [superCuota, setSuperCuota] = useState(null);
@@ -26,7 +29,7 @@ const PartidosActivos = () => {
     const fetchData = async () => {
       try {
         const data = await getApiData(
-          "http://harkaitz.informaticamajada.es/api/partidos/this-week"
+          "http://localhost:8000/api/partidos"
         );
         const currentDate = new Date().toISOString().split("T")[0];
         const filteredPartidos = data.filter(
@@ -56,13 +59,13 @@ const PartidosActivos = () => {
         }
         try {
           const response1 = await getApiData(
-            `https://harkaitz.informaticamajada.es/api/equipos/${partido.equipo_id}`
+            `http://localhost:8000/api/equipos/${partido.equipo_id}`
           );
           const response2 = await getApiData(
-            `https://harkaitz.informaticamajada.es/api/equipos/${partido.equipo2_id}`
+            `http://localhost:8000/api/equipos/${partido.equipo2_id}`
           );
           const cuotaresponse = await getApiData(
-            `https://harkaitz.informaticamajada.es/api/partidos/${partido.id}/cuotas`
+            `http://localhost:8000/api/partidos/${partido.id}/cuotas`
           );
           const fechaHora = `${partido.fecha}T${partido.hora}`;
           return {
@@ -175,36 +178,21 @@ const PartidosActivos = () => {
     }
   };
 
-  const indexOfLastPartido = currentPage * partidosPerPage;
+  const indexOfLastPartido = (currentPage + 1) * partidosPerPage;
   const indexOfFirstPartido = indexOfLastPartido - partidosPerPage;
   const currentPartidos = partidos.slice(
     indexOfFirstPartido,
     indexOfLastPartido
   );
 
-  const totalPages = Math.ceil(partidos.length / partidosPerPage);
-  const pageNumbers = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pageNumbers.push(i);
-  }
-
-  const handleClickPage = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  const paginateNext = () => {
-    setCurrentPage(currentPage + 1);
-  };
-
-  const paginatePrev = () => {
-    setCurrentPage(currentPage - 1);
-  };
+  const totalRecords = partidos.length;
+  const rows = 4;
 
   return (
-    <div  className="container-fluid" style={{ backgroundColor: '#898989' }}>
+    <div className="container-fluid" style={{ backgroundColor: '#898989' }}>
       <div className="row">
         <div className="col-md-12 col-lg-8">
-          <Sidebar />
+          <CustomSidebar />
           <Footer />
           <h1 className="text-center mb-4">Partidos Activos</h1>
           {successMessage && (
@@ -260,42 +248,16 @@ const PartidosActivos = () => {
               </Card.Body>
             </Card>
           ))}
+          <Paginator
+            first={indexOfFirstPartido}
+            rows={rows}
+            totalRecords={totalRecords}
+            onPageChange={(e) => setCurrentPage(e.page)}
+            className="pagination"
+          />
         </div>
         <div className="col-md-12 col-lg-4">
           <SuperCuota />
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-md-12">
-          <div className="mt-4 d-flex justify-content-center">
-            <Button
-              variant="secondary"
-              onClick={paginatePrev}
-              disabled={currentPage === 1}
-              className="me-2"
-            >
-              Anterior
-            </Button>
-            {pageNumbers.map((pageNumber) => (
-              <button
-                key={pageNumber}
-                className={`btn ${currentPage === pageNumber
-                  ? "btn-primary"
-                  : "btn-secondary"
-                  } me-2`}
-                onClick={() => handleClickPage(pageNumber)}
-              >
-                {pageNumber}
-              </button>
-            ))}
-            <Button
-              variant="secondary"
-              onClick={paginateNext}
-              disabled={indexOfLastPartido >= partidos.length}
-            >
-              Siguiente
-            </Button>
-          </div>
         </div>
       </div>
       <div className="row">
@@ -373,8 +335,6 @@ const PartidosActivos = () => {
       </div>
     </div>
   );
-
-
 };
 
 export default PartidosActivos;

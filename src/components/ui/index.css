@@ -70,3 +70,8 @@ nav {
   .dropdown-item:hover {
     background-color: #cbd5e0; /* Cambia este color según tus preferencias */
   }
+
+  .custom-navbar {
+    background-color: #333; /* Cambia esto al color deseado */
+  }
+  

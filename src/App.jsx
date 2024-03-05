@@ -15,8 +15,6 @@ import DirectoPage from "./pages/DirectoPage";
 import SalasPage from "./pages/SalasPage";
 import ApuestasPage from "./pages/ApuestasPage";
 import Admin from "./pages//Admin";
-
-
 import "./App.css"
 
 export default function App() {
