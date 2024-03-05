@@ -1,7 +1,8 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from "react";
-import { Card, Button, Modal, Form } from "react-bootstrap";
+import { Card, Button, Modal, Form, Row, Col } from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
+import CrearPartido from "../components/CrearPartido";
+import CrearSuperCuota from "../components/CrearSuperCuota"; // Importar componente CrearSuperCuota
 import "../App.css";
 
 const PartidosActivos = () => {
@@ -14,12 +15,14 @@ const PartidosActivos = () => {
      const [successMessage, setSuccessMessage] = useState("");
      const [currentPage, setCurrentPage] = useState(1);
      const [partidosPerPage] = useState(4);
+     const [showCrearPartido, setShowCrearPartido] = useState(false);
+     const [showCrearSuperCuota, setShowCrearSuperCuota] = useState(false); // Nuevo estado
 
      useEffect(() => {
           const fetchData = async () => {
                try {
                     const data = await getApiData(
-                         "http://lapachanga-back.v2.test/api/partidos/this-week"
+                         "https://harkaitz.informaticamajada.es/api/partidos"
                     );
                     // Filtrar solo los partidos del día actual o futuros
                     const currentDate = new Date().toISOString().split("T")[0];
@@ -50,10 +53,10 @@ const PartidosActivos = () => {
                     }
                     try {
                          const response1 = await getApiData(
-                              `http://lapachanga-back.v2.test/api/equipos/${partido.equipo_id}`
+                              `http://locahost:8000/api/equipos/${partido.equipo_id}`
                          );
                          const response2 = await getApiData(
-                              `http://lapachanga-back.v2.test/api/equipos/${partido.equipo2_id}`
+                              `http://locahost:8000/api/equipos/${partido.equipo2_id}`
                          );
                          const fechaHora = `${partido.fecha}T${partido.hora}`;
                          return {
@@ -98,12 +101,15 @@ const PartidosActivos = () => {
           e.preventDefault();
           try {
                await postApiData(
-                    `http://localhost:8000/api/partidos/update/${partidoId}`,
+                    `http://locahost:8000/api/partidos/update/${partidoId}`,
                     editingPartido
                );
                setSuccessMessage("Partido editado con éxito");
-               setTimeout(() => setSuccessMessage(""), 3000);
-               setShowModal(false);
+               setTimeout(() => {
+                    setSuccessMessage("");
+                    setShowModal(false);
+                    window.location.reload();
+               }, 3000);
           } catch (error) {
                console.error("Error al editar el partido:", error);
           }
@@ -112,7 +118,7 @@ const PartidosActivos = () => {
      const handleEliminarPartido = async (index) => {
           const partidoId = partidos[index].id;
           try {
-               await deleteApiData(`http://localhost:8000/api/partidos/${partidoId}`);
+               await deleteApiData(`http://locahost:8000/api/partidos/${partidoId}`);
                setSuccessMessage("Partido eliminado con éxito");
                setTimeout(() => setSuccessMessage(""), 3000);
                setPartidos(partidos.filter((partido) => partido.id !== partidoId));
@@ -123,10 +129,7 @@ const PartidosActivos = () => {
 
      const indexOfLastPartido = currentPage * partidosPerPage;
      const indexOfFirstPartido = indexOfLastPartido - partidosPerPage;
-     const currentPartidos = partidos.slice(
-          indexOfFirstPartido,
-          indexOfLastPartido
-     );
+     const currentPartidos = partidos.slice(indexOfFirstPartido, indexOfLastPartido);
 
      const totalPages = Math.ceil(partidos.length / partidosPerPage);
      const pageNumbers = [];
@@ -146,8 +149,24 @@ const PartidosActivos = () => {
           setCurrentPage(currentPage - 1);
      };
 
+     const handleCrearPartido = () => {
+          setShowCrearPartido(true);
+     };
+
+     const handleCloseCrearPartido = () => {
+          setShowCrearPartido(false);
+     };
+
+     const handleShowCrearSuperCuota = () => { // Función para mostrar el modal de CrearSuperCuota
+          setShowCrearSuperCuota(true);
+     };
+
+     const handleCloseCrearSuperCuota = () => { // Función para ocultar el modal de CrearSuperCuota
+          setShowCrearSuperCuota(false);
+     };
+
      return (
-          <div className="flex flex-col items-center">
+          <div className="container">
                <h1 className="text-white text-center mb-3">Partidos Activos</h1>
                {successMessage && (
                     <div
@@ -158,39 +177,43 @@ const PartidosActivos = () => {
                          <span className="block sm:inline"> {successMessage}</span>
                     </div>
                )}
-               {currentPartidos.map((partido, index) => (
-                    <Card key={partido.id} className="mb-3 w-75" id="card">
-                         <Card.Body>
-                              <Card.Title>
-                                   {nombresEquipos[index]
-                                        ? nombresEquipos[index].nombreEquipo1
-                                        : "Loading..."}{" "}
-                                   vs{" "}
-                                   {nombresEquipos[index]
-                                        ? nombresEquipos[index].nombreEquipo2
-                                        : "Loading..."}
-                              </Card.Title>
-                              <Card.Text>
-                                   Fecha: {partido.fecha}
-                                   <br />
-                                   Hora: {partido.hora}
-                              </Card.Text>
-                              <Button
-                                   className="btn text-dark mr-2"
-                                   onClick={() => handleShowModal(index)}
-                              >
-                                   Editar
-                              </Button>
-                              <Button
-                                   className="btn text-dark"
-                                   onClick={() => handleEliminarPartido(index)}
-                              >
-                                   Eliminar
-                              </Button>
-                         </Card.Body>
-                    </Card>
-               ))}
-               <div className="pagination flex">
+               <div className="row">
+                    {currentPartidos.map((partido, index) => (
+                         <div key={partido.id} className="col-md-6 col-lg-4 mb-3">
+                              <Card className="h-100">
+                                   <Card.Body>
+                                        <Card.Title>
+                                             {nombresEquipos[index]
+                                                  ? nombresEquipos[index].nombreEquipo1
+                                                  : "Loading..."}{" "}
+                                             vs{" "}
+                                             {nombresEquipos[index]
+                                                  ? nombresEquipos[index].nombreEquipo2
+                                                  : "Loading..."}
+                                        </Card.Title>
+                                        <Card.Text>
+                                             Fecha: {partido.fecha}
+                                             <br />
+                                             Hora: {partido.hora}
+                                        </Card.Text>
+                                        <Button
+                                             className="btn text-dark mr-2"
+                                             onClick={() => handleShowModal(index)}
+                                        >
+                                             Editar
+                                        </Button>
+                                        <Button
+                                             className="btn text-dark"
+                                             onClick={() => handleEliminarPartido(index)}
+                                        >
+                                             Eliminar
+                                        </Button>
+                                   </Card.Body>
+                              </Card>
+                         </div>
+                    ))}
+               </div>
+               <div className="pagination mt-4">
                     <Button
                          variant="secondary"
                          onClick={paginatePrev}
@@ -202,8 +225,8 @@ const PartidosActivos = () => {
                          <button
                               key={pageNumber}
                               className={`${currentPage === pageNumber
-                                        ? "bg-blue-500 text-white"
-                                        : "bg-gray-200 text-gray-700"
+                                   ? "bg-blue-500 text-white"
+                                   : "bg-gray-200 text-gray-700"
                                    } py-2 px-4 mx-1 rounded`}
                               onClick={() => handleClickPage(pageNumber)}
                          >
@@ -218,7 +241,31 @@ const PartidosActivos = () => {
                          Siguiente
                     </Button>
                </div>
-               <Modal show={showModal} onHide={handleCloseModal}>
+               <div className="mt-4">
+                    <Button variant="primary" onClick={handleCrearPartido}>
+                         Crear Partido
+                    </Button>
+                    {/* Botón para crear super cuota */}
+                    <Button variant="primary" onClick={handleShowCrearSuperCuota}>
+                         Crear SuperCuota
+                    </Button>
+               </div>
+               <div className="">
+                    {showCrearPartido && (
+                         <CrearPartido
+                              show={showCrearPartido}
+                              handleClose={handleCloseCrearPartido}
+                         />
+                    )}
+                    {/* Mostrar el modal de CrearSuperCuota si showCrearSuperCuota es true */}
+                    {showCrearSuperCuota && (
+                         <CrearSuperCuota
+                              show={showCrearSuperCuota}
+                              handleClose={handleCloseCrearSuperCuota}
+                         />
+                    )}
+               </div>
+               <Modal show={showModal} onHide={handleCloseModal} centered>
                     <Modal.Header closeButton>
                          <Modal.Title>Editar Partido</Modal.Title>
                     </Modal.Header>
@@ -256,12 +303,12 @@ const PartidosActivos = () => {
                                    <Form.Label>Equipo 1</Form.Label>
                                    <Form.Control
                                         type="text"
-                                        name="equipo1"
-                                        value={editingPartido ? editingPartido.equipo1 : ""}
+                                        name="equipo_id"
+                                        value={editingPartido ? editingPartido.equipo_id : ""}
                                         onChange={(e) =>
                                              setEditingPartido({
                                                   ...editingPartido,
-                                                  equipo1: e.target.value,
+                                                  equipo_id: e.target.value,
                                              })
                                         }
                                    />
@@ -270,12 +317,41 @@ const PartidosActivos = () => {
                                    <Form.Label>Equipo 2</Form.Label>
                                    <Form.Control
                                         type="text"
-                                        name="equipo2"
-                                        value={editingPartido ? editingPartido.equipo2 : ""}
+                                        name="equipo2_id"
+                                        value={editingPartido ? editingPartido.equipo2_id : ""}
                                         onChange={(e) =>
                                              setEditingPartido({
                                                   ...editingPartido,
-                                                  equipo2: e.target.value,
+                                                  equipo2_id: e.target.value,
+                                             })
+                                        }
+                                   />
+                              </Form.Group>
+
+                              <Form.Group controlId="formGanador">
+                                   <Form.Label>Ganador</Form.Label>
+                                   <Form.Control
+                                        type="text"
+                                        name="ganador"
+                                        value={editingPartido ? editingPartido.ganador : ""}
+                                        onChange={(e) =>
+                                             setEditingPartido({
+                                                  ...editingPartido,
+                                                  ganador: e.target.value,
+                                             })
+                                        }
+                                   />
+                              </Form.Group>
+                              <Form.Group controlId="formResultado">
+                                   <Form.Label>Resultado</Form.Label>
+                                   <Form.Control
+                                        type="text"
+                                        name="resultado"
+                                        value={editingPartido ? editingPartido.resultado : ""}
+                                        onChange={(e) =>
+                                             setEditingPartido({
+                                                  ...editingPartido,
+                                                  resultado: e.target.value,
                                              })
                                         }
                                    />

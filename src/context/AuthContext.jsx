@@ -41,6 +41,7 @@ export function AuthProvider({ children }) {
     }
   };
 
+  
   const updateApiData = async (url, data) => {
     try {
       await csrf();
@@ -75,6 +76,19 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const postSupercuota = async (cuotaData) => {
+    try {
+      await csrf(); // Asegúrate de tener definida la función csrf
+      const response = await updateApiData("/api/supercuota/1",  cuotaData);
+      return response;
+    } catch (error) {
+      console.error("Error creating apuesta:", error);
+      throw error;
+    }
+  };
+
+
+
   const postPartido = async (partidoData) => {
     try {
       await csrf(); // Asegúrate de tener definida la función csrf
@@ -96,6 +110,7 @@ export function AuthProvider({ children }) {
       // Guardar el ID del usuario en sessionStorage
       sessionStorage.setItem("userId", data.id);
       sessionStorage.setItem("TipoUsuario", data.rol);
+      sessionStorage.setItem("Saldo", data.saldo);
     } catch (error) {
       console.error("Error getting user:", error);
     }
@@ -224,14 +239,14 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider
       value={{
+        postSupercuota,
         deleteApiData,
         updateApiData,
         postPartido,
         getApiData,
         postApiData,
         postApuestas,
-        csrf,
-        errors,
+        csrf, errors,
         user,
         login,
         register,

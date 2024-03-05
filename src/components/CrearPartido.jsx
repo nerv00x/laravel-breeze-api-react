@@ -19,6 +19,7 @@ function CrearPartido() {
     liga_id: "",
   });
   const [successMessage, setSuccessMessage] = useState("");
+  const [cardVisible, setCardVisible] = useState(true);
 
   const handleChange = (e) => {
     setPartido({ ...partido, [e.target.name]: e.target.value });
@@ -27,10 +28,8 @@ function CrearPartido() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // RUTA http://lapachanga-back.test/api/partidos
-      setSuccessMessage("Partido creado con éxito"); // Establecer el mensaje de éxito
-      setTimeout(() => setSuccessMessage(""), 3000); // Limpiar el mensaje después de 3 segundos
-      // Resetea el estado de partido
+      setSuccessMessage("Partido creado con éxito");
+      setTimeout(() => setSuccessMessage(""), 3000);
       const nuevoPartido = {
         mapa: partido.mapa,
         arbitro: partido.arbitro,
@@ -61,8 +60,12 @@ function CrearPartido() {
     }
   };
 
+  const handleCardClose = () => {
+    setCardVisible(false);
+  };
+
   return (
-    <div className="crear-partido-container d-flex justify-content-center align-items-center">
+    <div className="crear-partido-container position-absolute start-50 top-50 translate-middle">
       {successMessage && (
         <div
           className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded absolute top-12 right-10 mt-4 ml-4"
@@ -78,9 +81,7 @@ function CrearPartido() {
         <Card>
           <Card.Body>
             <h2 className="text-center mb-4">Crear Nuevo Partido</h2>
-  
             <Form onSubmit={handleSubmit}>
- 
               <Form.Group controlId="mapa">
                 <Form.Label>Mapa:</Form.Label>
                 <Form.Control

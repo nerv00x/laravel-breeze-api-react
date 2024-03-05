@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Component } from 'react';
 import Generic from './errors/Generic';
 class ErrorBoundary extends Component {

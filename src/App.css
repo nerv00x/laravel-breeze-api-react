@@ -1,7 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 body{
-    background-color: #464646;
+    background-color: #898989;
 }
 
 #card{
-    background-color: #FFBF69
+    background-color: rgb(119, 111, 111)
 }
