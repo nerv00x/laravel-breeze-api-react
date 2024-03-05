@@ -16,8 +16,9 @@ function CrearPartido() {
     hora: "",
     puntuacion: 0,
     ganador: "",
-    liga_id: ""
+    liga_id: "",
   });
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleChange = (e) => {
     setPartido({ ...partido, [e.target.name]: e.target.value });
@@ -27,7 +28,8 @@ function CrearPartido() {
     e.preventDefault();
     try {
       // RUTA http://lapachanga-back.test/api/partidos
-      alert("Partido creado con éxito");
+      setSuccessMessage("Partido creado con éxito"); // Establecer el mensaje de éxito
+      setTimeout(() => setSuccessMessage(""), 3000); // Limpiar el mensaje después de 3 segundos
       // Resetea el estado de partido
       const nuevoPartido = {
         mapa: partido.mapa,
@@ -36,13 +38,17 @@ function CrearPartido() {
         equipo2_id: partido.equipo2_id.toString(),
         fecha: partido.fecha,
         hora: partido.hora,
-        puntuacion: partido.puntuacion,
+        Puntuacion: partido.puntuacion,
         ganador: partido.ganador,
-        liga_id: partido.liga_id.toString()
+
+        liga_id: partido.liga_id
       };
   
       console.log("Datos del partido:", nuevoPartido); // Agrega este console.log
-  
+
+
+      console.log(nuevoPartido);
+
       const response = await postPartido(nuevoPartido);
      
       if (response && response.status === "success") {
@@ -57,7 +63,18 @@ function CrearPartido() {
 
   return (
     <div className="crear-partido-container d-flex justify-content-center align-items-center">
-      <div className="w-50"> {/* Contenedor con el mismo ancho que los campos del formulario */}
+      {successMessage && (
+        <div
+          className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded absolute top-12 right-10 mt-4 ml-4"
+          role="alert"
+        >
+          <strong className="font-bold">Éxito!</strong>
+          <span className="block sm:inline"> {successMessage}</span>
+        </div>
+      )}
+      <div className="w-50">
+        {" "}
+        {/* Contenedor con el mismo ancho que los campos del formulario */}
         <Card>
           <Card.Body>
             <h2 className="text-center mb-4">Crear Nuevo Partido</h2>
@@ -77,7 +94,7 @@ function CrearPartido() {
               </Form.Group>
 
               {/* Repite el mismo proceso para los demás campos del formulario */}
-              
+
               <Form.Group controlId="arbitro">
                 <Form.Label>Árbitro:</Form.Label>
                 <Form.Control
@@ -173,7 +190,11 @@ function CrearPartido() {
                 />
               </Form.Group>
 
-              <Button variant="primary" type="submit" className="btn text-dark mt-3">
+              <Button
+                variant="primary"
+                type="submit"
+                className="btn text-dark mt-3"
+              >
                 Guardar Partido
               </Button>
             </Form>
